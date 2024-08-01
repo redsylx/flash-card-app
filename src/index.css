@@ -16,3 +16,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+::selection {
+  background-color: #8b5cf6; /* Warna background saat teks diblok */
+  color: #f5f3ff; /* Warna teks saat diblok */
+}
+
+.custom-input {
+  @apply rounded bg-neutral-800 placeholder-neutral-700 text-neutral-500 focus:outline-none;
+}
