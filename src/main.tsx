@@ -4,7 +4,14 @@ import App from './App.tsx'
 import './index.css'
 import { createBrowserRouter, RouteObject, RouterProvider } from 'react-router-dom'
 import LoginPage from './pages/LoginPage.tsx'
-import SignUpPage from './pages/SignUpPage.tsx'
+
+import '@fontsource/poppins/100.css';
+import '@fontsource/poppins/400.css';
+import '@fontsource/poppins/700.css';
+
+import '@fontsource/poppins/100-italic.css';
+import '@fontsource/poppins/400-italic.css';
+import '@fontsource/poppins/700-italic.css';
 
 const routeObject : RouteObject[] = [
   {
@@ -14,11 +21,7 @@ const routeObject : RouteObject[] = [
   {
     path: "/login",
     element: <LoginPage/>
-  },
-  {
-    path: "/signup",
-    element: <SignUpPage/>
-  },
+  }
 ]
 
 const router = createBrowserRouter(routeObject)

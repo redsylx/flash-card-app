@@ -3,13 +3,9 @@
 @tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -17,11 +13,28 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root {
+  --bg-color: #221c35;
+  --main-color: #f67599;
+  --caret-color: #f67599;
+  --sub-color: #5a3a7e;
+  --sub-alt-color: #2f2346;
+  --text-color: #ffe3eb;
+  --error-color: #efc050;
+  --error-extra-color: #c5972c;
+  --colorful-error-color: #efc050;
+  --colorful-error-extra-color: #c5972c;
+}
+
 ::selection {
-  background-color: #8b5cf6; /* Warna background saat teks diblok */
-  color: #f5f3ff; /* Warna teks saat diblok */
+  background-color: var(--main-color); /* Warna background saat teks diblok */
+  color: var(--bg-color); /* Warna teks saat diblok */
 }
 
 .custom-input {
-  @apply rounded bg-neutral-800 placeholder-neutral-700 text-neutral-500 focus:outline-none;
+  @apply rounded-lg bg-sub-alt placeholder-sub text-text focus:outline-none;
+}
+
+.custom-button {
+  @apply font-bold mt-2 p-2 rounded-lg bg-sub-alt text-text hover:bg-text hover:text-sub-alt
 }
