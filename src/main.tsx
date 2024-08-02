@@ -12,6 +12,7 @@ import '@fontsource/poppins/700.css';
 import '@fontsource/poppins/100-italic.css';
 import '@fontsource/poppins/400-italic.css';
 import '@fontsource/poppins/700-italic.css';
+import Authentication from './pages/Authentication.tsx'
 
 const routeObject : RouteObject[] = [
   {
@@ -21,6 +22,10 @@ const routeObject : RouteObject[] = [
   {
     path: "/login",
     element: <LoginPage/>
+  },
+  {
+    path: "/auth",
+    element: <Authentication/>
   }
 ]
 

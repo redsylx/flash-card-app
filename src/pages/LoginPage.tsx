@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import LoginCard from "../components/LoginCard";
+import auth from "../services/auth";
+import { Auth0Callback, Auth0Error, CrossOriginLoginOptions, DbSignUpOptions } from "auth0-js";
 
 interface LoginPageProps {
     setFormType: React.Dispatch<React.SetStateAction<LoginFormType>>
@@ -26,18 +28,60 @@ const IconGoogleHover : React.FC = () => {
     )
 }
 
+interface ILoginForm {
+    email: string,
+    password: string,
+    repassword?: string
+}
+
 const LoginForm : React.FC<LoginPageProps> = ({ setFormType }) => {
     const [btnHoverState, setBtnHoverState] = useState(false);
+    const [loginForm, setLoginForm] = useState<ILoginForm>({email:"", password:""});
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setLoginForm({
+            ...loginForm,
+            [event.target.name]: event.target.value
+        })
+    }
+
+    const loginOption : CrossOriginLoginOptions = {
+        password: loginForm.password,
+        email: loginForm.email,
+        responseType: "token",
+        realm: import.meta.env.VITE_AUTH_CONNECTION,
+        redirectUri: import.meta.env.VITE_AUTH_REDIRECT_URL
+    }
+
+    const loginCallback : Auth0Callback<Auth0Error, any> = (error, result) => {
+        if(error) {
+            alert("Login Error")
+            console.error(error)
+            return
+        }
+
+        console.log("Login Success")
+        console.log(result)
+    }
+
+    const login = () => {
+        auth.login(loginOption,loginCallback)
+    }
     return (
-        <form className="flex flex-col">
+        <div className="flex flex-col">
             <input
                 type="email"
                 placeholder="Email"
+                name="email"
+                value={loginForm.email}
+                onChange={handleInputChange}
                 className="custom-input mb-4 p-2"
             />
             <input
                 type="password"
                 placeholder="Password"
+                name="password"
+                value={loginForm.password}
+                onChange={handleInputChange}
                 className="custom-input mb-2 p-2"
             />
 
@@ -46,8 +90,8 @@ const LoginForm : React.FC<LoginPageProps> = ({ setFormType }) => {
             </small>
             
             <button
-                type="submit"
                 className="custom-button"
+                onClick={login}
             >
                 Log in
             </button>
@@ -63,33 +107,80 @@ const LoginForm : React.FC<LoginPageProps> = ({ setFormType }) => {
             <small className="mt-4 text-center text-sub">
                 Belum punya akun? <a onClick={() => setFormType(LoginFormType.signup)} className="text-sub underline hover:text-text"><i>daftar</i></a>
             </small>
-        </form>
+        </div>
     );
 }
 
 const SignupForm : React.FC<LoginPageProps> = ({ setFormType }) => {
     const [btnHoverState, setBtnHoverState] = useState(false);
+    const [loginForm, setLoginForm] = useState<ILoginForm>({ email: "", password: "", repassword: ""})
+
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setLoginForm({
+            ...loginForm,
+            [event.target.name]: event.target.value
+        })
+    }
+
+    const signUpCallback : Auth0Callback<Auth0Error, any> = (error, result) => {
+        if(error) {
+            alert("Sign Up error")
+            console.error(error)
+            return
+        }
+
+        console.log(result)
+    }
+
+    const signUpOption : DbSignUpOptions = {
+        email: loginForm.email,
+        password: loginForm.password,
+        connection: import.meta.env.VITE_AUTH_CONNECTION,
+    }
+
+    const signUp = () => {
+        
+        try {
+            console.log("email", signUpOption.email)
+            console.log("conn", signUpOption.connection)
+            console.log("pass", signUpOption.password)
+            auth.signup(signUpOption, signUpCallback);
+        } catch(err) {
+            console.error("error", err)
+        }
+    }
+
     return(
         <form className="flex flex-col">
             <input
                 type="email"
                 placeholder="Email"
+                name="email"
+                value={loginForm.email}
                 className="custom-input mb-4 p-2"
+                onChange={handleInputChange}
             />
             <input
                 type="password"
                 placeholder="Password"
+                name="password"
+                value={loginForm.password}
                 className="custom-input mb-4 p-2"
+                onChange={handleInputChange}
             />
             <input
                 type="password"
                 placeholder="Re-Enter Password"
+                name="repassword"
+                value={loginForm.repassword}
                 className="custom-input mb-4 p-2"
+                onChange={handleInputChange}
             />
             
             <button
-                type="submit"
+                type="button"
                 className="custom-button"
+                onClick={signUp}
             >
                 Sign up
             </button>
