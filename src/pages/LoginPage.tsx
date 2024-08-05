@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useState } from "react";
 import LoginCard from "../components/LoginCard";
-import auth from "../services/auth";
-import { Auth0Callback, Auth0Error, CrossOriginLoginOptions, DbSignUpOptions } from "auth0-js";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface LoginPageProps {
     setFormType: React.Dispatch<React.SetStateAction<LoginFormType>>
@@ -44,28 +43,10 @@ const LoginForm : React.FC<LoginPageProps> = ({ setFormType }) => {
         })
     }
 
-    const loginOption : CrossOriginLoginOptions = {
-        password: loginForm.password,
-        email: loginForm.email,
-        responseType: "token",
-        realm: import.meta.env.VITE_AUTH_CONNECTION,
-        redirectUri: import.meta.env.VITE_AUTH_REDIRECT_URL
-    }
+    const { loginWithRedirect } = useAuth0();
+    
+    const login = () => loginWithRedirect()
 
-    const loginCallback : Auth0Callback<Auth0Error, any> = (error, result) => {
-        if(error) {
-            alert("Login Error")
-            console.error(error)
-            return
-        }
-
-        console.log("Login Success")
-        console.log(result)
-    }
-
-    const login = () => {
-        auth.login(loginOption,loginCallback)
-    }
     return (
         <div className="flex flex-col">
             <input
@@ -111,100 +92,11 @@ const LoginForm : React.FC<LoginPageProps> = ({ setFormType }) => {
     );
 }
 
-const SignupForm : React.FC<LoginPageProps> = ({ setFormType }) => {
-    const [btnHoverState, setBtnHoverState] = useState(false);
-    const [loginForm, setLoginForm] = useState<ILoginForm>({ email: "", password: "", repassword: ""})
-
-    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setLoginForm({
-            ...loginForm,
-            [event.target.name]: event.target.value
-        })
-    }
-
-    const signUpCallback : Auth0Callback<Auth0Error, any> = (error, result) => {
-        if(error) {
-            alert("Sign Up error")
-            console.error(error)
-            return
-        }
-
-        console.log(result)
-    }
-
-    const signUpOption : DbSignUpOptions = {
-        email: loginForm.email,
-        password: loginForm.password,
-        connection: import.meta.env.VITE_AUTH_CONNECTION,
-    }
-
-    const signUp = () => {
-        
-        try {
-            console.log("email", signUpOption.email)
-            console.log("conn", signUpOption.connection)
-            console.log("pass", signUpOption.password)
-            auth.signup(signUpOption, signUpCallback);
-        } catch(err) {
-            console.error("error", err)
-        }
-    }
-
-    return(
-        <form className="flex flex-col">
-            <input
-                type="email"
-                placeholder="Email"
-                name="email"
-                value={loginForm.email}
-                className="custom-input mb-4 p-2"
-                onChange={handleInputChange}
-            />
-            <input
-                type="password"
-                placeholder="Password"
-                name="password"
-                value={loginForm.password}
-                className="custom-input mb-4 p-2"
-                onChange={handleInputChange}
-            />
-            <input
-                type="password"
-                placeholder="Re-Enter Password"
-                name="repassword"
-                value={loginForm.repassword}
-                className="custom-input mb-4 p-2"
-                onChange={handleInputChange}
-            />
-            
-            <button
-                type="button"
-                className="custom-button"
-                onClick={signUp}
-            >
-                Sign up
-            </button>
-
-            <hr className="mt-6 mb-2 border-sub-alt"/>
-
-            <div className="flex justify-center mt-4">
-                <button onMouseEnter={() => setBtnHoverState(true)} onMouseLeave={() => setBtnHoverState(false)} className="flex items-center justify-center w-full mb-2 p-2 bg-sub-alt rounded-lg text-white hover:bg-text">
-                    {btnHoverState ? <IconGoogleHover/> : <IconGoogleNormal/>}
-                </button>
-            </div>
-
-            <small className="mt-4 text-center text-sub">
-                Sudah punya akun? <a onClick={() => setFormType(LoginFormType.signin)} className="text-sub underline hover:text-text"><i>masuk</i></a>
-            </small>
-        </form>
-    );
-}
-
 const LoginPage: React.FC = () => {
     const [formType, setFormType] = useState(LoginFormType.signin);
     return (
         <LoginCard>
-            { formType == LoginFormType.signin ? <LoginForm setFormType={setFormType}/> : <SignupForm setFormType={setFormType}/> }
+            <LoginForm setFormType={setFormType}/>
         </LoginCard>
     )
 }
