@@ -18,17 +18,34 @@ const requestInit = (accessToken: string) : RequestInit => {
 function useCardAuth() : Function {
     const { getAccessTokenSilently } = useAuth0();
     async function run() {
-        try {
-            const accessToken = await getAccessTokenSilently(tokenOptions);
-            const response : Response = await fetch(url_auth, requestInit(accessToken));
-            return await response.text();
-        } catch (e) {
-            console.log(e);
+        const accessToken = await getAccessTokenSilently(tokenOptions);
+        const response : Response = await fetch(url_auth, requestInit(accessToken));
+        return await response.json();
+    }
+    return run;
+}
+
+function useCardAuthUpdate(): Function {
+    const { getAccessTokenSilently } = useAuth0();
+    
+    async function run(username: string) {
+        const accessToken = await getAccessTokenSilently(tokenOptions);
+        const url = `${url_auth}?username=${encodeURIComponent(username)}`;
+        const init = requestInit(accessToken);
+        init.method = 'PUT';
+        const response: Response = await fetch(url, init);
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            throw new Error(errorMessage);
         }
+        return true;
     }
 
     return run;
 }
 
-export default useCardAuth;
+export {
+    useCardAuth,
+    useCardAuthUpdate,
+};
 

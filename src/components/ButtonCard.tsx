@@ -1,5 +1,5 @@
 import { useState } from "react";
-import useCardAuth from "../hooks/HookCard"
+import { useCardAuth } from "../hooks/HookCard"
 
 export default () => {
     const [authResult, setAuthResult] = useState("");

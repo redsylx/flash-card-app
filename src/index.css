@@ -39,5 +39,5 @@
 }
 
 .custom-button {
-  @apply font-bold mt-2 p-2 rounded-lg bg-sub-alt text-text hover:bg-text hover:text-sub-alt
+  @apply font-bold bg-sub-alt text-text hover:bg-sub hover:text-text
 }
