@@ -1,4 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import { useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 
 let BtnLogin = () => {
   const { loginWithRedirect } = useAuth0();
@@ -10,6 +12,14 @@ let BtnLogin = () => {
 }
 
 function App() {
+  const { isAuthenticated } = useAuth0();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/profile');
+    }
+  }, []);
 
   return (
     <>

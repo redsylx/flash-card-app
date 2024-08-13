@@ -65,7 +65,7 @@ export default () => {
         };
 
         authenticate();
-    }, [cardAuth, navigate]);
+    }, []);
     return(
         <div className="flex items-center min-h-screen">
             {isUsernameExist ? <p>Authenticating . . .</p> : <UsernameRequest/>}

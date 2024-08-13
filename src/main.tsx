@@ -1,8 +1,7 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { createBrowserRouter, redirect, RouteObject, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouteObject, RouterProvider } from 'react-router-dom'
 import LoginPage from './pages/LoginPage.tsx'
 
 import '@fontsource/poppins/100.css';
@@ -15,6 +14,8 @@ import '@fontsource/poppins/600-italic.css';
 import { Auth0Provider } from '@auth0/auth0-react'
 import Profile from './pages/Pofile.tsx'
 import Auth from './pages/Auth.tsx'
+import { Provider } from 'react-redux';
+import store from './store';
 
 const routeObject : RouteObject[] = [
   {
@@ -38,19 +39,19 @@ const routeObject : RouteObject[] = [
 const router = createBrowserRouter(routeObject)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <div className="px-[15%]">
-      <Auth0Provider 
-        domain={import.meta.env.VITE_AUTH_DOMAIN}
-        clientId={import.meta.env.VITE_AUTH_CLIENT_ID}
-        authorizationParams={{
-          redirect_uri: import.meta.env.VITE_AUTH_REDIRECT_URL,
-          audience: import.meta.env.VITE_AUTH_AUDIENCE,
-          scope: import.meta.env.VITE_AUTH_SCOPE
-        }}
-        >
+  <div className="px-[15%]">
+    <Auth0Provider 
+      domain={import.meta.env.VITE_AUTH_DOMAIN}
+      clientId={import.meta.env.VITE_AUTH_CLIENT_ID}
+      authorizationParams={{
+        redirect_uri: import.meta.env.VITE_AUTH_REDIRECT_URL,
+        audience: import.meta.env.VITE_AUTH_AUDIENCE,
+        scope: import.meta.env.VITE_AUTH_SCOPE
+      }}
+      >
+      <Provider store={store}>
         <RouterProvider router={router}/>
-      </Auth0Provider>
-    </div>
-  </React.StrictMode>,
+      </Provider>
+    </Auth0Provider>
+  </div>
 )
