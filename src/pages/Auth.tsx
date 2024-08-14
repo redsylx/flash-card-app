@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useState } from "react"
 import { useCardAuth, useCardAuthUpdate} from "../hooks/HookCard";
 import { useNavigate } from "react-router-dom";
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
+import { ROUTES } from "../routes";
 
 const UsernameRequest : React.FC = () => {
     const [username, setUsername] = useState("");
@@ -9,7 +10,7 @@ const UsernameRequest : React.FC = () => {
     const navigate = useNavigate();
 
     const authUpdate = () => {
-        if(cardAuthUpdate(username)) navigate("/profile")
+        if(cardAuthUpdate(username)) navigate(ROUTES.HOME)
     }
     const isUsernameValid = () => {
         return username.length > 3;
@@ -57,7 +58,7 @@ export default () => {
         const authenticate = async () => {
             try {
                 const { username } = await cardAuth();
-                if(username) navigate("/profile");
+                if(username) navigate(ROUTES.HOME);
                 setUsernameExist(false);
             } catch (error) {
                 navigate('/');
@@ -67,7 +68,7 @@ export default () => {
         authenticate();
     }, []);
     return(
-        <div className="flex items-center min-h-screen">
+        <div className="flex items-center min-h-screen custom-page">
             {isUsernameExist ? <p>Authenticating . . .</p> : <UsernameRequest/>}
         </div>
     )

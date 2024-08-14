@@ -1,6 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
-import LogoutButton from "../components/LogoutButton";
 import Header from "../components/Header";
 
 const Profile = () => {
@@ -10,17 +9,16 @@ const Profile = () => {
   }, [getAccessTokenSilently]);
 
   if (isLoading) {
-    return <div>Loading ...</div>;
+    return <div className="custom-page">Loading ...</div>;
   }
 
   return (
     isAuthenticated && user && (
       <div>
         <Header/>
-        <img src={user.picture} alt={user.name} />
-        <h2>{user.name}</h2>
-        <p>{user.email}</p>
-        <LogoutButton/>
+        <div className="custom-page">
+          <p>Home Page</p>
+        </div>
       </div>
     )
   );

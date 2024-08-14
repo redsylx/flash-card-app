@@ -41,3 +41,39 @@
 .custom-button {
   @apply font-bold bg-sub-alt text-text hover:bg-sub hover:text-text
 }
+
+.custom-icon-container {
+  @apply bg-sub-alt rounded-full p-2
+}
+
+.custom-icon-container-active {
+  @apply bg-sub-alt rounded-full p-2
+}
+
+.custom-icon-container-hover {
+  @apply bg-sub rounded-full p-2 cursor-pointer
+}
+
+.custom-icon {
+  @apply text-sub
+}
+
+.custom-icon-active {
+  @apply text-main
+}
+
+.custom-icon-hover {
+  @apply text-main
+}
+
+.custom-header {
+  @apply backdrop-blur-sm sticky top-0 z-50
+}
+
+.custom-page {
+  @apply px-4
+}
+
+.custom-app {
+  @apply px-[12%]
+}
