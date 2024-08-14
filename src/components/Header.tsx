@@ -60,8 +60,8 @@ export default () => {
     const logout = () => auth0Logout({ logoutParams: { returnTo: window.location.origin } })
 
     return (
-        <header className="flex justify-between items-center py-4 custom-header">
-            <div className="flex items-centerm custom-page">
+        <header className="flex justify-between items-center py-4 custom-header custom-page">
+            <div className="flex items-center">
                 <div className='mr-4' onClick={() => navigateRoute(ROUTES.HOME)}>
                     <IconContainer isActive={location.pathname == ROUTES.HOME}>
                         <Home/>
