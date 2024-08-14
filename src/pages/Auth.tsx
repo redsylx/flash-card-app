@@ -27,8 +27,8 @@ const UsernameRequest : React.FC = () => {
 
     return(
         <div>
-            <p className="text-4xl mb-4">umm . . .</p>
-            <p className="text-4xl mb-8">what should we call you?</p>
+            <p className="custom-text-4 mb-4">umm . . .</p>
+            <p className="custom-text-4 mb-8">what should we call you?</p>
             <div className="flex items-center" id="SSS">
                 <input
                     type="text"
@@ -36,7 +36,7 @@ const UsernameRequest : React.FC = () => {
                     onChange={(e) => handleInputChange(e)}
                     maxLength={15}
                     placeholder="ucup_tampan1"
-                    className="min-w-[500px] text-4xl h-12 bg-transparent text-sub placeholder-sub-alt focus:outline-none"
+                    className="min-w-[500px] custom-text-4 h-12 bg-transparent text-sub placeholder-sub-alt focus:outline-none"
                 />
                 <button onClick={() => authUpdate()}>
                     <ArrowCircleRightIcon 

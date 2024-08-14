@@ -77,3 +77,23 @@
 .custom-app {
   @apply px-[12%]
 }
+
+.custom-text-5 {
+  @apply text-5xl
+}
+
+.custom-text-4 {
+  @apply text-4xl
+}
+
+.custom-text-3 {
+  @apply text-3xl
+}
+
+.custom-text-2 {
+  @apply text-2xl
+}
+
+.custom-text-1 {
+  @apply text-base
+}

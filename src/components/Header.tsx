@@ -79,7 +79,7 @@ export default () => {
                 </div>
             </div>
             <div className="flex items-center">
-                <p className='text-2xl text-sub mr-4'>{username ? username : '. . .'}</p>
+                <p className='custom-text-1 text-sub mr-4'>{username ? username : '. . .'}</p>
                 <div onClick={logout}>
                     <IconContainer>
                         <Logout/>
