@@ -25,10 +25,10 @@ const routeObject : RouteObject[] = [
     path: "/",
     element: <App/>
   },
-  // {
-  //   path: "/login",
-  //   element: <LoginPage/>
-  // },
+  {
+    path: "/login",
+    element: <LoginPage/>
+  },
   {
     path: ROUTES.AUTH,
     element: <Auth/>

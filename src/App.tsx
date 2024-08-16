@@ -1,27 +1,16 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from "./routes";
 
-let BtnLogin = () => {
-  const { loginWithRedirect } = useAuth0();
+const BtnLogin = () => {
+  const navigate = useNavigate();
   return(
     <button 
-      onClick={() => loginWithRedirect()}
+      onClick={() => navigate(ROUTES.LOGIN)}
       className="bg-sub-alt py-6 min-w-[300px] font-bold custom-text-2 rounded-xl custom-button">Login</button>
   )
 }
 
 function App() {
-  const { isAuthenticated } = useAuth0();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate(ROUTES.HOME);
-    }
-  }, []);
-
   return (
     <>
         <div className="flex items-center min-h-screen custom-page">

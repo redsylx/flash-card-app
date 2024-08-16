@@ -1,16 +1,16 @@
 import { ChangeEvent, useEffect, useState } from "react"
-import { useCardAuth, useCardAuthUpdate} from "../hooks/HookCard";
+import { serviceAuthGet, serviceAuthUpdate} from "../services/ServiceAuth";
 import { useNavigate } from "react-router-dom";
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import { ROUTES } from "../routes";
+import { auth } from "../firebase";
 
 const UsernameRequest : React.FC = () => {
     const [username, setUsername] = useState("");
-    const cardAuthUpdate = useCardAuthUpdate();
     const navigate = useNavigate();
 
-    const authUpdate = () => {
-        if(cardAuthUpdate(username)) navigate(ROUTES.HOME)
+    const authUpdate = async () => {
+        if(await serviceAuthUpdate('', username)) navigate(ROUTES.HOME)
     }
     const isUsernameValid = () => {
         return username.length > 3;
@@ -50,22 +50,22 @@ const UsernameRequest : React.FC = () => {
 }
 
 export default () => {
-    const cardAuth = useCardAuth();
     const navigate = useNavigate();
     const [isUsernameExist, setUsernameExist] = useState(true);
 
     useEffect(() => {
-        const authenticate = async () => {
-            try {
-                const { username } = await cardAuth();
-                if(username) navigate(ROUTES.HOME);
-                setUsernameExist(false);
-            } catch (error) {
-                navigate('/');
-            }
-        };
+        auth.currentUser?.getIdToken().then(p => console.log(p));
+        // const authenticate = async () => {
+        //     try {
+        //         const { username } = await (await serviceAuthGet('')).json();
+        //         if(username) navigate(ROUTES.HOME);
+        //         setUsernameExist(false);
+        //     } catch (error) {
+        //         navigate('/');
+        //     }
+        // };
 
-        authenticate();
+        // authenticate();
     }, []);
     return(
         <div className="flex items-center min-h-screen custom-page">
