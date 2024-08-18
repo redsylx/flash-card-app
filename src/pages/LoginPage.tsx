@@ -109,7 +109,6 @@ const LoginForm : React.FC<LoginPageProps> = ({ setFormType }) => {
         .catch((error) => {
         console.error(error);
         });
-        console.log("LOGIN")
     }
 
     return (

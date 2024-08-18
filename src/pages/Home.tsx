@@ -278,19 +278,11 @@ const ListMemento: React.FC = () => {
 };
 
 const Home = () => {
-  const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
-
   useEffect(() => {
-    // get the list of cardCategory
-    
   }, []);
 
-  if (isLoading) {
-    return <div className="custom-page pt-4">Loading ...</div>;
-  }
-
   return (
-    isAuthenticated && user && (
+    true && (
       <div>
         <Header/>
         <div className="custom-page">

@@ -1,29 +1,34 @@
 import { Home, PlayArrow, LibraryBooks, Logout } from '@mui/icons-material';
-import React, { ReactElement, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUsername } from '../reducers/user';
-import { useCardAuth } from '../hooks/HookCard';
+import { serviceAuthGet } from '../services/ServiceAuth';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useAuth0 } from '@auth0/auth0-react';
 import { useLocation } from 'react-router-dom';
 import { ROUTES } from '../routes';
 import { RootState } from '../store';
 import { IconContainer } from './CustomIcon';
+import { auth } from '../firebase';
 
 export default () => {
     const location = useLocation();
     const dispatch = useDispatch();
-    const cardAuth = useCardAuth();
     const navigate = useNavigate();
     const username = useSelector((state: RootState) => state.user.username)
-    const { logout: auth0Logout } = useAuth0();
+    const [ jwt, setJwt] = useState('');
   
     useEffect(() => {
         const authenticate = async () => {
-            const { username } = await cardAuth();
-            if(!username) navigate("/auth");
-            dispatch(setUsername(username || ''));
+            const token = await auth.currentUser?.getIdToken();
+            if (token) {
+                setJwt(token);
+                const res = await serviceAuthGet(token);
+                if(!res.ok) alert(res);
+                const { username } = await res.json();
+                if(!username) navigate("/auth");
+                dispatch(setUsername(username));
+            }
         };
         authenticate();
     }, []);

@@ -52,20 +52,27 @@ const UsernameRequest : React.FC = () => {
 export default () => {
     const navigate = useNavigate();
     const [isUsernameExist, setUsernameExist] = useState(true);
+    const [jwt, setJwt] = useState("");
 
     useEffect(() => {
-        auth.currentUser?.getIdToken().then(p => console.log(p));
-        // const authenticate = async () => {
-        //     try {
-        //         const { username } = await (await serviceAuthGet('')).json();
-        //         if(username) navigate(ROUTES.HOME);
-        //         setUsernameExist(false);
-        //     } catch (error) {
-        //         navigate('/');
-        //     }
-        // };
-
-        // authenticate();
+        const authenticate = async () => {
+            try {
+                const token = await auth.currentUser?.getIdToken();
+                if (token) {
+                    setJwt(token);
+                    const { username } = await (await serviceAuthGet(token)).json();
+                    if (username) {
+                        navigate(ROUTES.HOME);
+                    } else {
+                        setUsernameExist(false);
+                    }
+                }
+            } catch (error) {
+                navigate('/');
+            }
+        };
+    
+        authenticate();
     }, []);
     return(
         <div className="flex items-center min-h-screen custom-page">
