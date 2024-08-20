@@ -2,10 +2,11 @@ import React, { ChangeEvent, useState } from "react";
 import LoginCard from "../components/LoginCard";
 import { IconContainer } from "../components/CustomIcon";
 import { Google } from "@mui/icons-material";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, browserSessionPersistence, setPersistence } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes";
+
 
 interface LoginPageProps {
     setFormType: React.Dispatch<React.SetStateAction<LoginFormType>>
@@ -104,10 +105,15 @@ const LoginForm : React.FC<LoginPageProps> = ({ setFormType }) => {
     }
     
     const login = () => {
-        signInWithEmailAndPassword(auth, loginForm.email, loginForm.password)
-        .then(() => navigate(ROUTES.AUTH))
+        setPersistence(auth, browserSessionPersistence)
+        .then(() => {
+            return signInWithEmailAndPassword(auth, loginForm.email, loginForm.password).then(() => navigate(ROUTES.AUTH))
+            .catch((error) => {
+            console.error(error);
+            });;
+        })
         .catch((error) => {
-        console.error(error);
+            console.error("Persistence error:", error);
         });
     }
 

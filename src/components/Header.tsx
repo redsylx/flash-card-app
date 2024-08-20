@@ -1,42 +1,23 @@
 import { Home, PlayArrow, LibraryBooks, Logout } from '@mui/icons-material';
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setUsername } from '../reducers/user';
-import { serviceAuthGet } from '../services/ServiceAuth';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '../routes';
-import { RootState } from '../store';
 import { IconContainer } from './CustomIcon';
 import { auth } from '../firebase';
+import { useAppSelector } from '../hooks';
 
 export default () => {
     const location = useLocation();
-    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const username = useSelector((state: RootState) => state.user.username)
-    const [ jwt, setJwt] = useState('');
-  
-    useEffect(() => {
-        const authenticate = async () => {
-            const token = await auth.currentUser?.getIdToken();
-            if (token) {
-                setJwt(token);
-                const res = await serviceAuthGet(token);
-                if(!res.ok) alert(res);
-                const { username } = await res.json();
-                if(!username) navigate("/auth");
-                dispatch(setUsername(username));
-            }
-        };
-        authenticate();
-    }, []);
+    const user = useAppSelector(p => p.user);
+
     const navigateRoute = (route : string) => {
         if (route === location.pathname) return
         navigate(route);
     }
-    const logout = () => auth0Logout({ logoutParams: { returnTo: window.location.origin } })
+
+    const logout = () => {
+        auth.signOut().then(() => navigate(ROUTES.BASE));
+    }
 
     return (
         <header className="flex justify-between items-center py-4 custom-header custom-page">
@@ -58,7 +39,7 @@ export default () => {
                 </div>
             </div>
             <div className="flex items-center">
-                <p className='custom-text-1 text-sub mr-4'>{username ? username : '. . .'}</p>
+                <p className='custom-text-1 text-sub mr-4'>{user.username ? user.username : '. . .'}</p>
                 <div onClick={logout}>
                     <IconContainer>
                         <Logout/>

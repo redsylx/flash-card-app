@@ -4,4 +4,5 @@ export const ROUTES = {
     GAME: '/game',
     LIBRARY: '/library',
     LOGIN: '/login',
+    BASE: '/'
 };

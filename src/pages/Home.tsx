@@ -1,154 +1,10 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
-import { Delete } from '@mui/icons-material';
-import { IconContainer } from "../components/CustomIcon";
-
-interface DropdownButtonProps {
-  onClick: () => void;
-  selectedOption: string;
-}
-
-const DropdownButton: React.FC<DropdownButtonProps> = ({ onClick, selectedOption }) => {
-  return (
-    <div className="p-4 bg-sub-alt rounded-xl border-2 border-sub custom-button hover:cursor-pointer w-[300px]" onClick={onClick}>
-      <button className="custom-text-1 text-left">{selectedOption}</button>
-    </div>
-  );
-};
-
-interface DropdownSearchProps {
-  placeholder: string;
-  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-const DropdownSearch: React.FC<DropdownSearchProps> = ({ placeholder, onSearchChange }) => {
-  return (
-    <input
-      type="text"
-      placeholder={placeholder}
-      onChange={onSearchChange}
-      className="w-full px-4 py-4 custom-text-1 text-text bg-bg border-b-2 border-sub placeholder-sub font-bold rounded-t-xl focus:outline-none focus:border-round-xl"
-    />
-  );
-};
-
-interface DropdownOptionsProps {
-  keyword: string;
-  options: Option[];
-  onOptionClick: (option: Option) => void;
-  onEmptyClick: (option: string) => void;
-}
-
-const DropdownOptions: React.FC<DropdownOptionsProps> = ({ keyword, options, onOptionClick, onEmptyClick }) => {
-  const lastOptions = options[Math.max(0, options.length-1)];
-
-  return (
-    <div>
-      {options.length > 0 ? options.map((option) => (
-        <div
-          key={option.id}
-          onClick={() => onOptionClick(option)}
-          className={`flex justify-between items-center bg-bg px-4 py-4 custom-text-1 text-text hover:bg-sub-alt cursor-pointer ${option === lastOptions ? 'rounded-b-xl' : ''}`}
-        >
-          <p>{option.name}</p>
-          <div className="flex justify-end items-center">
-            <p className="me-2">{option.total} item</p>
-            <div onClick={(e) => {
-              e.stopPropagation();
-              alert(`DELETE ${option.name}`);
-            }}>
-              <IconContainer>
-                  <Delete/>
-              </IconContainer>
-            </div>
-          </div>
-        </div>
-      ))
-      : 
-        <div
-          key="create"
-          onClick={() => onEmptyClick(keyword)}
-          className="bg-bg px-4 py-4 custom-text-1 text-text hover:bg-sub-alt cursor-pointer rounded-b-xl"
-        >
-          <p>
-            Add <span className="font-bold text-main">{keyword}</span>
-          </p>
-        </div>
-      }
-    </div>
-  );
-};
-
-type Option = {
-  id: number;
-  name: string;
-  total: number;
-};
-
-const Dropdown = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState({id: 1, name: 'default', total: 0});
-  const [searchTerm, setSearchTerm] = useState('');
-  const tempOptions: Option[] = [
-    { id: 1, name: 'default', total: 10 },
-    { id: 7, name: 'politic', total: 70 },
-    { id: 2, name: 'meme', total: 20 },
-    { id: 8, name: 'finance', total: 80 },
-    { id: 3, name: 'english', total: 30 },
-    { id: 4, name: 'korea', total: 40 },
-    { id: 5, name: 'tech', total: 50 },
-    { id: 6, name: 'study', total: 60 },
-  ];
-
-  const [options, setOptions] = useState(tempOptions);
-
-  let filteredOptions = options.filter(option =>
-    option.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  
-  filteredOptions.sort((a, b) => {
-    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-  });
-
-  useEffect(() => {
-    setSearchTerm('');
-  }, [isOpen])
-
-  let optionsToShow = filteredOptions.slice(0, 10);
-
-  const toggleDropdown = () => setIsOpen(!isOpen);
-
-  const handleOptionClick = (option: Option) => {
-    setSelectedOption(option);
-    setIsOpen(false);
-  };
-
-  const handleEmptyClick = (newCategory: string) => {
-    console.log(newCategory);
-    const newOption : Option = {
-      id: 100,
-      name: newCategory,
-      total: 999
-    }
-    setOptions(p => [...p, newOption]);
-  }
-
-  return (
-    <div className="flex items-center">
-      <div className="me-4">
-        <DropdownButton onClick={toggleDropdown} selectedOption={selectedOption.name} />
-        {isOpen && (
-          <div className="absolute z-10 mt-4 bg-sub-alt border-2 border-sub rounded-xl min-w-[300px]">
-            <DropdownSearch placeholder="find or create category" onSearchChange={(e) => setSearchTerm(e.target.value)}/>
-            <DropdownOptions options={optionsToShow} onOptionClick={handleOptionClick} keyword={searchTerm} onEmptyClick={handleEmptyClick}/>
-          </div>
-        )}
-      </div>
-      <p className="">{selectedOption.total > 0 ? selectedOption.total + ' items' : ''}</p>
-    </div>
-  );
-};
+import { useAppSelector, useAuthState, useFetchUser } from "../hooks";
+import Dropdown, { Option } from "../components/Dropdown";
+import { getIdToken } from "../firebase";
+import { serviceCardCategoryCreate, serviceCardCategoryGetList } from "../services/ServiceCardCategory";
+import { serviceAuthGet } from "../services/ServiceAuth";
 
 interface CardProps {
   clueTxt: string;
@@ -278,16 +134,36 @@ const ListMemento: React.FC = () => {
 };
 
 const Home = () => {
+  const authReady = useAuthState();
+  const user = useAppSelector(p => p.user);
+  const [nCreateCategory, setNCreateCategory] = useState(0);
+  const [options, setOptions] = useState<Option[]>([]);
+
+  useFetchUser(authReady);
+  
   useEffect(() => {
-  }, []);
+    if(!authReady || !user.id) return;
+    const getOptions = async () => {
+      const token = await getIdToken();
+      const res : Option[] = await (await serviceCardCategoryGetList(token, user.id)).json();
+      setOptions(res);
+    }
+
+    getOptions();
+  }, [authReady, user, nCreateCategory])
+
+  const createCardCategory = async (newCategoryName: string) => {
+    const token = await getIdToken();
+    await (await serviceCardCategoryCreate(token, user.id, newCategoryName)).json();
+    setNCreateCategory(nCreateCategory + 1);
+  }
 
   return (
-    true && (
       <div>
         <Header/>
         <div className="custom-page">
           <div className="my-4">
-            <Dropdown/>
+            <Dropdown optionsProp={options} onEmptyClick={createCardCategory}/>
           </div>
           <hr className="border-t-2 border-sub"/>
           <div className="pt-4">
@@ -295,7 +171,6 @@ const Home = () => {
           </div>
         </div>
       </div>
-    )
   );
 };
 

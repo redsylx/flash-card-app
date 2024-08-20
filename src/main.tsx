@@ -15,7 +15,7 @@ import { Auth0Provider } from '@auth0/auth0-react'
 import Home from './pages/Home.tsx'
 import Auth from './pages/Auth.tsx'
 import { Provider } from 'react-redux';
-import store from './store';
+import { store } from './store';
 import { ROUTES } from './routes.ts'
 import Game from './pages/Game.tsx'
 import Library from './pages/Library.tsx'
@@ -26,7 +26,7 @@ const routeObject : RouteObject[] = [
     element: <App/>
   },
   {
-    path: "/login",
+    path: ROUTES.LOGIN,
     element: <LoginPage/>
   },
   {

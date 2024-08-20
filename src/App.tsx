@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from "./routes";
+import { useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebase';
 
 const BtnLogin = () => {
   const navigate = useNavigate();
@@ -11,6 +14,14 @@ const BtnLogin = () => {
 }
 
 function App() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if(user) navigate(ROUTES.HOME);
+  })
+
+  return () => unsubscribe();
+  }, [])
   return (
     <>
         <div className="flex items-center min-h-screen custom-page">

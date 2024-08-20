@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import { ROUTES } from "../routes";
 import { auth } from "../firebase";
+import { useAuthState } from "../hooks";
 
 const UsernameRequest : React.FC = () => {
     const [username, setUsername] = useState("");
@@ -52,28 +53,21 @@ const UsernameRequest : React.FC = () => {
 export default () => {
     const navigate = useNavigate();
     const [isUsernameExist, setUsernameExist] = useState(true);
-    const [jwt, setJwt] = useState("");
+    const authReady = useAuthState();
 
     useEffect(() => {
-        const authenticate = async () => {
-            try {
-                const token = await auth.currentUser?.getIdToken();
-                if (token) {
-                    setJwt(token);
-                    const { username } = await (await serviceAuthGet(token)).json();
-                    if (username) {
-                        navigate(ROUTES.HOME);
-                    } else {
-                        setUsernameExist(false);
-                    }
-                }
-            } catch (error) {
-                navigate('/');
-            }
-        };
+        if(!authReady) return;
+
+        const getUser = async () => {
+            const token = await auth.currentUser?.getIdToken() ?? "";
+            const { username } = await (await serviceAuthGet(token)).json();
+            setUsernameExist(username);
+            if(username) navigate(ROUTES.HOME);
+        }
+
+        getUser();
+    }, [authReady])
     
-        authenticate();
-    }, []);
     return(
         <div className="flex items-center min-h-screen custom-page">
             {isUsernameExist ? <p>Authenticating . . .</p> : <UsernameRequest/>}
