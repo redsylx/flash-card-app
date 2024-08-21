@@ -42,6 +42,10 @@
   @apply font-bold bg-sub-alt text-text hover:bg-sub hover:text-text
 }
 
+.custom-card {
+  @apply bg-bg text-text hover:border-main
+}
+
 .custom-icon-container {
   @apply bg-sub-alt rounded-full p-2
 }

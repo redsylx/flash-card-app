@@ -79,21 +79,23 @@ const DropdownOptions: React.FC<DropdownOptionsProps> = ({ keyword, options, onO
 };
   
 type Option = {
-    id: number;
+    id: string;
     name: string;
     nCard: number;
 };
   
 type CreateCardCategory = (newCategoryName: string) => Promise<void>;
+type OptionChange = (categoryId: string) => Promise<void>;
 
 type DropdownProps = {
     optionsProp: Option[] | null;
     onEmptyClick: CreateCardCategory | null;
+    onOptionChange?: OptionChange;
 };
   
-const Dropdown : React.FC<DropdownProps> = ({ optionsProp, onEmptyClick }) => {
+const Dropdown : React.FC<DropdownProps> = ({ optionsProp, onEmptyClick, onOptionChange }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedOption, setSelectedOption] = useState({id: 1, name: 'default', nCard: 0});
+    const [selectedOption, setSelectedOption] = useState({id: "1", name: 'default', nCard: 0});
     const [searchTerm, setSearchTerm] = useState('');
     const [options, setOptions] = useState<Option[]>([]);
     const [optionsToShow, setOptionsToShow] = useState<Option[]>([])
@@ -120,9 +122,12 @@ const Dropdown : React.FC<DropdownProps> = ({ optionsProp, onEmptyClick }) => {
 
     const toggleDropdown = () => setIsOpen(!isOpen);
 
-    const handleOptionClick = (option: Option) => {
+    const handleOptionClick = async (option: Option) => {
         setSelectedOption(option);
         setIsOpen(false);
+        if(onOptionChange) {
+            await onOptionChange(option.id);
+        }
     };
 
     const handleEmptyClick = async () => {
