@@ -1,9 +1,11 @@
 import { configureStore, Store } from '@reduxjs/toolkit';
 import userReducer from './reducers/user';
+import popUpReducer from './reducers/popUp';
 
 export const store : Store = configureStore({
   reducer: {
-    user: userReducer
+    user: userReducer,
+    popUp: popUpReducer
   },
 });
 

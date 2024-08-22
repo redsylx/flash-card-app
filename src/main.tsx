@@ -19,6 +19,7 @@ import { store } from './store';
 import { ROUTES } from './routes.ts'
 import Game from './pages/Game.tsx'
 import Library from './pages/Library.tsx'
+import Popup from './components/PopUp.tsx'
 
 const routeObject : RouteObject[] = [
   {
@@ -63,6 +64,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       >
       <Provider store={store}>
         <RouterProvider router={router}/>
+        <Popup/>
       </Provider>
     </Auth0Provider>
   </div>
