@@ -1,6 +1,7 @@
-import { Delete } from "@mui/icons-material";
+import { Close, Edit } from "@mui/icons-material";
 import { IconContainer } from "./CustomIcon";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { CustomPopup } from "./PopUp";
 
 interface DropdownButtonProps {
     onClick: () => void;
@@ -10,7 +11,7 @@ interface DropdownButtonProps {
 const DropdownButton: React.FC<DropdownButtonProps> = ({ onClick, selectedOption }) => {
     return (
         <div className="p-4 bg-sub-alt rounded-xl border-2 border-sub custom-button hover:cursor-pointer w-[300px]" onClick={onClick}>
-        <button className="custom-text-1 text-left">{selectedOption}</button>
+            <button className="custom-text-1 text-left">{selectedOption}</button>
         </div>
     );
 };
@@ -37,9 +38,48 @@ interface DropdownOptionsProps {
     onOptionClick: (option: Option) => void;
     onEmptyClick: (option: string) => void;
 }
+
+interface EditOptionProps {
+    setPopup: (value: boolean) => void;
+    option: Option | undefined;
+}
+
+const EditOption : React.FC<EditOptionProps>= ({ setPopup, option }) => {
+    const [val, setVal] = useState(option?.name ?? "")
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setVal(event.target.value);
+    }
+    return(
+        <div className="flex flex-col justify-between h-80">
+            <div>
+                <div className="flex">
+                    <p className="custom-text-3 font-bold text-text mb-4">Update category name</p>
+                    <div>
+                        <IconContainer>
+                            <Close/>
+                        </IconContainer>
+                    </div>
+                </div>
+                <input
+                type="text"
+                placeholder={option?.name ?? ""}
+                value={val}
+                onChange={handleInputChange}
+                className="w-full custom-text-1 text-sub bg-bg border-b-2 border-sub placeholder-sub-alt font-bold focus:outline-none focus:border-round-xl"
+                />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <button onClick={() => setPopup(false)} className="font-bold bg-bg border-2 border-sub-alt text-sub hover:bg-error-1 hover:border-error-1 hover:text-bg py-2 rounded-lg">Delete</button>
+                <button onClick={() => setPopup(false)} className="custom-button py-2 rounded-lg">Update</button>
+            </div>
+        </div>
+    )
+}
   
 const DropdownOptions: React.FC<DropdownOptionsProps> = ({ keyword, options, onOptionClick, onEmptyClick }) => {
     const lastOptions = options[Math.max(0, options.length-1)];
+    const [selectedOption, setSelectedOption] = useState<Option>();
+    const [popUp, setPopUp] = useState(false);
 
     return (
         <div>
@@ -51,14 +91,13 @@ const DropdownOptions: React.FC<DropdownOptionsProps> = ({ keyword, options, onO
             >
             <p>{option.name}</p>
             <div className="flex justify-end items-center">
-                <p className="me-2">{option.nCard} item</p>
+                <p className="me-4">{option.nCard} item</p>
                 <div onClick={(e) => {
-                e.stopPropagation();
-                alert(`DELETE ${option.name}`);
+                    e.stopPropagation();
+                    setSelectedOption(option);
+                    setPopUp(true)
                 }}>
-                <IconContainer>
-                    <Delete/>
-                </IconContainer>
+                <Edit fontSize="small" className="text-text cursor-pointer mt-1 hover:text-main"/>
                 </div>
             </div>
             </div>
@@ -74,6 +113,7 @@ const DropdownOptions: React.FC<DropdownOptionsProps> = ({ keyword, options, onO
             </p>
             </div>
         }
+        <CustomPopup isOpen={popUp} children={<EditOption setPopup={setPopUp} option={selectedOption}/>}/>
         </div>
     );
 };
