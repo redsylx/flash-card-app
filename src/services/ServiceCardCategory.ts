@@ -14,7 +14,21 @@ async function serviceCardCategoryCreate (accessToken: string, accountId: string
     return await fetch(url, init);
 }
 
+async function serviceCardCategoryUpdate (accessToken: string, accountId: string, categoryId: string, newCategoryName: string) {
+    const url = `${base_url}?accountId=${encodeURIComponent(accountId)}&categoryId=${encodeURIComponent(categoryId)}&newCategoryName=${newCategoryName}`;
+    const init = requestInit(accessToken, 'PUT');
+    return await fetch(url, init);
+}
+
+async function serviceCardCategoryDelete (accessToken: string, accountId: string, categoryId: string) {
+    const url = `${base_url}?accountId=${encodeURIComponent(accountId)}&categoryId=${encodeURIComponent(categoryId)}`;
+    const init = requestInit(accessToken, 'DELETE');
+    return await fetch(url, init);
+}
+
 export {
     serviceCardCategoryGetList,
-    serviceCardCategoryCreate
+    serviceCardCategoryCreate,
+    serviceCardCategoryUpdate,
+    serviceCardCategoryDelete
 }

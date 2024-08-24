@@ -2,6 +2,9 @@ import { Close, Edit } from "@mui/icons-material";
 import { IconContainer } from "./CustomIcon";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { CustomPopup } from "./PopUp";
+import { serviceCardCategoryDelete, serviceCardCategoryUpdate } from "../services/ServiceCardCategory";
+import { auth } from "../firebase";
+import { useAppSelector } from "../hooks";
 
 interface DropdownButtonProps {
     onClick: () => void;
@@ -46,15 +49,29 @@ interface EditOptionProps {
 
 const EditOption : React.FC<EditOptionProps>= ({ setPopup, option }) => {
     const [val, setVal] = useState(option?.name ?? "")
+    const user = useAppSelector(p => p.user)
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setVal(event.target.value);
     }
+
+    const updateCategoryName = async () => {
+        const token = await auth.currentUser?.getIdToken() ?? "";
+        await serviceCardCategoryUpdate(token, user.id, option?.id ?? "", val);
+        setPopup(false);
+    }
+
+    const deleteCategory = async () => {
+        const token = await auth.currentUser?.getIdToken() ?? "";
+        await serviceCardCategoryDelete(token, user.id, option?.id ?? "");
+        setPopup(false)
+    }
+
     return(
         <div className="flex flex-col justify-between h-80">
             <div>
                 <div className="flex">
                     <p className="custom-text-3 font-bold text-text mb-4">Update category name</p>
-                    <div>
+                    <div onClick={() => setPopup(false)}>
                         <IconContainer>
                             <Close/>
                         </IconContainer>
@@ -69,8 +86,8 @@ const EditOption : React.FC<EditOptionProps>= ({ setPopup, option }) => {
                 />
             </div>
             <div className="grid grid-cols-2 gap-4">
-                <button onClick={() => setPopup(false)} className="font-bold bg-bg border-2 border-sub-alt text-sub hover:bg-error-1 hover:border-error-1 hover:text-bg py-2 rounded-lg">Delete</button>
-                <button onClick={() => setPopup(false)} className="custom-button py-2 rounded-lg">Update</button>
+                <button onClick={deleteCategory} className="font-bold bg-bg border-2 border-sub-alt text-sub hover:bg-error-1 hover:border-error-1 hover:text-bg py-2 rounded-lg">Delete</button>
+                <button onClick={updateCategoryName} className="custom-button py-2 rounded-lg">Update</button>
             </div>
         </div>
     )
