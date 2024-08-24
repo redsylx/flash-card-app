@@ -20,6 +20,8 @@ import { ROUTES } from './routes.ts'
 import Game from './pages/Game.tsx'
 import Library from './pages/Library.tsx'
 import Popup from './components/PopUp.tsx'
+import { LoadingProvider } from './contexts/Loading.tsx'
+import { HomeProvider } from './contexts/Home.tsx'
 
 const routeObject : RouteObject[] = [
   {
@@ -36,7 +38,9 @@ const routeObject : RouteObject[] = [
   },
   {
     path: ROUTES.HOME,
-    element: <Home/>
+    element: <HomeProvider>
+      <Home/>
+    </HomeProvider>
   },
   
   {
@@ -62,10 +66,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         scope: import.meta.env.VITE_AUTH_SCOPE
       }}
       >
-      <Provider store={store}>
-        <RouterProvider router={router}/>
-        <Popup/>
-      </Provider>
+      <LoadingProvider>
+        <Provider store={store}>
+          <RouterProvider router={router}/>
+          <Popup/>
+        </Provider>
+      </LoadingProvider>
     </Auth0Provider>
   </div>
 )

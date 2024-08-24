@@ -3,8 +3,11 @@ import { IconContainer } from "./CustomIcon";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { CustomPopup } from "./PopUp";
 import { serviceCardCategoryDelete, serviceCardCategoryUpdate } from "../services/ServiceCardCategory";
-import { auth } from "../firebase";
+import { getIdToken } from "../firebase";
 import { useAppSelector } from "../hooks";
+import { useLoading } from "../contexts/Loading";
+import { asyncProcess } from "../utils/loading";
+import { useHome } from "../contexts/Home";
 
 interface DropdownButtonProps {
     onClick: () => void;
@@ -50,20 +53,32 @@ interface EditOptionProps {
 const EditOption : React.FC<EditOptionProps>= ({ setPopup, option }) => {
     const [val, setVal] = useState(option?.name ?? "")
     const user = useAppSelector(p => p.user)
+    const { setIsLoading } = useLoading();
+    const { refreshDropdown, setRefreshDropdown } = useHome();
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setVal(event.target.value);
     }
 
     const updateCategoryName = async () => {
-        const token = await auth.currentUser?.getIdToken() ?? "";
-        await serviceCardCategoryUpdate(token, user.id, option?.id ?? "", val);
+        setIsLoading(true)
+        await asyncProcess(async () => {
+            const token = await getIdToken();
+            await serviceCardCategoryUpdate(token, user.id, option?.id ?? "", val);
+        })
+        setRefreshDropdown(!refreshDropdown)
         setPopup(false);
+        setIsLoading(false)
     }
 
     const deleteCategory = async () => {
-        const token = await auth.currentUser?.getIdToken() ?? "";
-        await serviceCardCategoryDelete(token, user.id, option?.id ?? "");
-        setPopup(false)
+        setIsLoading(true)
+        await asyncProcess(async () => {
+            const token = await getIdToken();
+            await serviceCardCategoryDelete(token, user.id, option?.id ?? "");
+        })
+        setRefreshDropdown(!refreshDropdown)
+        setPopup(false);
+        setIsLoading(false)
     }
 
     return(
