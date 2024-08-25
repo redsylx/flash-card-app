@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { ICardCategory } from "./Dropdown";
 
 interface ICard {
   clueTxt: string;
@@ -9,6 +10,7 @@ interface ICard {
   pctCorrect: number | null;
   id: string;
   descriptionTxt: string;
+  cardCategory?: ICardCategory
 }
 
 interface CardProps {

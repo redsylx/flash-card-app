@@ -40,14 +40,14 @@ const DropdownSearch: React.FC<DropdownSearchProps> = ({ placeholder, onSearchCh
   
 interface DropdownOptionsProps {
     keyword: string;
-    options: Option[];
-    onOptionClick: (option: Option) => void;
+    options: ICardCategory[];
+    onOptionClick: (option: ICardCategory) => void;
     onEmptyClick: (option: string) => void;
 }
 
 interface EditOptionProps {
     setPopup: (value: boolean) => void;
-    option: Option | undefined;
+    option: ICardCategory | undefined;
 }
 
 const EditOption : React.FC<EditOptionProps>= ({ setPopup, option }) => {
@@ -110,7 +110,7 @@ const EditOption : React.FC<EditOptionProps>= ({ setPopup, option }) => {
   
 const DropdownOptions: React.FC<DropdownOptionsProps> = ({ keyword, options, onOptionClick, onEmptyClick }) => {
     const lastOptions = options[Math.max(0, options.length-1)];
-    const [selectedOption, setSelectedOption] = useState<Option>();
+    const [selectedOption, setSelectedOption] = useState<ICardCategory>();
     const [popUp, setPopUp] = useState(false);
 
     return (
@@ -150,17 +150,23 @@ const DropdownOptions: React.FC<DropdownOptionsProps> = ({ keyword, options, onO
     );
 };
   
-type Option = {
+interface ICardCategory {
     id: string;
     name: string;
     nCard: number;
 };
+
+const defaultCardCategory : ICardCategory = {
+    id: "",
+    name: "default",
+    nCard: 0
+}
   
 type CreateCardCategory = (newCategoryName: string) => Promise<void>;
-type OptionChange = (categoryId: string) => Promise<void>;
+type OptionChange = (cardCategory: ICardCategory) => Promise<void>;
 
 type DropdownProps = {
-    optionsProp: Option[] | null;
+    optionsProp: ICardCategory[] | null;
     onEmptyClick: CreateCardCategory | null;
     onOptionChange?: OptionChange;
 };
@@ -169,8 +175,8 @@ const Dropdown : React.FC<DropdownProps> = ({ optionsProp, onEmptyClick, onOptio
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState({id: "1", name: 'default', nCard: 0});
     const [searchTerm, setSearchTerm] = useState('');
-    const [options, setOptions] = useState<Option[]>([]);
-    const [optionsToShow, setOptionsToShow] = useState<Option[]>([])
+    const [options, setOptions] = useState<ICardCategory[]>([]);
+    const [optionsToShow, setOptionsToShow] = useState<ICardCategory[]>([])
 
     useEffect(() => {
         setOptions(optionsProp ?? []);
@@ -196,11 +202,11 @@ const Dropdown : React.FC<DropdownProps> = ({ optionsProp, onEmptyClick, onOptio
 
     const toggleDropdown = () => setIsOpen(!isOpen);
 
-    const handleOptionClick = async (option: Option) => {
+    const handleOptionClick = async (option: ICardCategory) => {
         setSelectedOption(option);
         setIsOpen(false);
         if(onOptionChange) {
-            await onOptionChange(option.id);
+            await onOptionChange(option);
         }
     };
 
@@ -227,5 +233,9 @@ const Dropdown : React.FC<DropdownProps> = ({ optionsProp, onEmptyClick, onOptio
 export default Dropdown;
 
 export type {
-    Option
+    ICardCategory
+}
+
+export {
+    defaultCardCategory
 }
