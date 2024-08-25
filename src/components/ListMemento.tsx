@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-interface Card {
+interface ICard {
   clueTxt: string;
   clueImg: string;
   nFrequency: number;
@@ -12,7 +12,7 @@ interface Card {
 }
 
 interface CardProps {
-  card: Card,
+  card: ICard,
   selected?: false,
 }
 
@@ -86,15 +86,15 @@ const Card: React.FC<CardProps> = ({ card }) => {
 };
 
 interface ListMementoProps {
-  listMemento: Card[]
+  listMemento: ICard[]
 }
 
 const ListMemento: React.FC<ListMementoProps> = ({ listMemento }) => {
-    const [cards, setCards] = useState<Card[]>([]);
+    const [cards, setCards] = useState<ICard[]>([]);
 
     useEffect(() => {
       if(!listMemento || (listMemento && listMemento.length < 1)) {
-        const defaultCard : Card = {
+        const defaultCard : ICard = {
           clueImg: "",
           clueTxt: "No Cards Found :(",
           descriptionTxt: "Oops, nothing here",
@@ -126,5 +126,5 @@ const ListMemento: React.FC<ListMementoProps> = ({ listMemento }) => {
   }
 
   export type {
-    Card,
+    ICard,
   }
