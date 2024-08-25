@@ -71,7 +71,7 @@
 }
 
 .custom-header {
-  @apply backdrop-blur-sm sticky top-0 z-50
+  @apply backdrop-blur-sm sticky top-0 z-10
 }
 
 .custom-page {

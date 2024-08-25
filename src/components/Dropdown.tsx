@@ -181,15 +181,17 @@ const Dropdown : React.FC<DropdownProps> = ({ optionsProp, onEmptyClick, onOptio
     }, [isOpen])
 
     useEffect(() => {
+        const sortedOptions = options.sort((a, b) => 
+            a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+        );
+
         if(!searchTerm) {
-            setOptionsToShow(options);
+            setOptionsToShow(sortedOptions);
             return
         } 
-        setOptionsToShow(options.filter(option =>
+        setOptionsToShow(sortedOptions.filter(option =>
             option.name.toLowerCase().includes(searchTerm.toLowerCase())
-        ).sort((a, b) => {
-            return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-        }).slice(0, 10));
+        ).slice(0, 10));
     }, [searchTerm, options])
 
     const toggleDropdown = () => setIsOpen(!isOpen);
