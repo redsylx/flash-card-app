@@ -1,11 +1,11 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Header from "../components/Header";
 import { useAppSelector, useAuthState, useFetchUser } from "../hooks";
-import Dropdown, { defaultCardCategory, ICardCategory } from "../components/Dropdown";
+import Dropdown, { ICardCategory } from "../components/Dropdown";
 import { getIdToken } from "../firebase";
 import { serviceCardCategoryCreate, serviceCardCategoryGetList } from "../services/ServiceCardCategory";
 import { ICard, ListMemento } from "../components/ListMemento";
-import { serviceCardCreate, serviceCardGetList } from "../services/ServiceCard";
+import { serviceCardCreate, serviceCardGetList, serviceCardUpdate } from "../services/ServiceCard";
 import { useHome } from "../contexts/Home";
 import { CustomPopup } from "../components/PopUp";
 import { useLoading } from "../contexts/Loading";
@@ -18,57 +18,84 @@ import { IGetUploadProp, serviceUpload, serviceUploadGetUploadImageUrl
 
 interface ImageUploaderProps {
   setImage: React.Dispatch<React.SetStateAction<File | null>>;
+  imageUrl?: string;
+  setCurrentImage: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({setImage}) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({ setImage, imageUrl, setCurrentImage }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const inputFileRef = useRef<HTMLInputElement | null>(null);
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]; // Mengambil file pertama dari input
 
-      if (file) {
-          setImage(file);
-          const reader = new FileReader();
-          reader.onloadend = () => {
-              setPreview(reader.result as string); // Memastikan hasilnya adalah string (data URL)
-          };
-          reader.readAsDataURL(file);
-      }
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      setImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+        setCurrentImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
+  const handleRemoveImage = () => {
+    setImage(null);
+    setPreview(null);
+    setCurrentImage("");
+    if (inputFileRef.current) {
+      inputFileRef.current.value = '';
+    }
+  };
+
+  useEffect(() => {
+    imageUrl && setPreview(imageUrl);
+  }, [imageUrl]);
+
   const handleButtonClick = () => {
-    inputFileRef.current?.click(); // Trigger input file ketika button di-click
+    inputFileRef.current?.click();
   };
 
   return (
-      <div className="flex items-center">
-        <div className="me-4">
-          {preview ? (
-              <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-32 h-32 object-cover border-2 border-sub rounded-lg"
-              />
-          ) : (
-            <div className="w-32 h-32 border-2 border-sub-alt rounded-lg"></div>
+    <div className="flex items-center">
+      <div className="me-4">
+        {preview ? (
+          <img
+            src={preview}
+            alt="Preview"
+            className="w-32 h-32 object-cover border-2 border-sub rounded-lg"
+          />
+        ) : (
+          <div className="w-32 h-32 border-2 border-sub-alt rounded-lg"></div>
+        )}
+      </div>
+      <div>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          ref={inputFileRef}
+          className="hidden"
+        />
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={handleButtonClick}
+            className="bg-sub text-text px-4 py-2 rounded-lg"
+          >
+            Select Image
+          </button>
+          {preview && (
+            <button
+              onClick={handleRemoveImage}
+              className="bg-error-1 text-bg px-4 py-2 rounded-lg"
+            >
+              Remove Image
+            </button>
           )}
         </div>
-        <div>
-          <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              ref={inputFileRef}
-              className="hidden"
-          />
-          <button
-              onClick={handleButtonClick}
-              className="bg-sub text-text px-4 py-2 rounded-lg"
-          >
-              Select Image
-          </button>
-        </div>
       </div>
+    </div>
   );
 };
 
@@ -76,12 +103,14 @@ interface MementoFormProps {
   setPopup: (value: boolean) => void;
   memento?: ICard;
   category?: ICardCategory;
+  type: "add" | "update";
 }
 
-const MementoForm : React.FC<MementoFormProps>= ({ setPopup, memento, category }) => {
+const MementoForm : React.FC<MementoFormProps>= ({ setPopup, memento, category, type }) => {
   const defaultCard: ICard = {
     clueTxt: '',
     clueImg: '',
+    clueImgUrl: '',
     nFrequency: 0,
     nCorrect: 0,
     pctCorrect: null,
@@ -93,6 +122,7 @@ const MementoForm : React.FC<MementoFormProps>= ({ setPopup, memento, category }
   const user = useAppSelector(p => p.user)
   const { setIsLoading } = useLoading();
   const [image, setImage] = useState<File | null>(null);
+  const [currentImage, setCurrentImage] = useState<string>("");
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setVal(prev => ({
         ...prev,
@@ -126,18 +156,54 @@ const MementoForm : React.FC<MementoFormProps>= ({ setPopup, memento, category }
     setIsLoading(false)
   }
 
+  const updateCard = async () => {
+    setIsLoading(true)
+    await asyncProcess(async () => {
+      const token = await getIdToken();
+      if(currentImage != memento?.clueImg && image) {
+        const uploadRes : IGetUploadProp = await (await serviceUploadGetUploadImageUrl(token, image.name)).json();
+        try {
+          await serviceUpload(image, uploadRes);
+          val.clueImg = uploadRes.fileName;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      if(!currentImage) val.clueImg = "";
+      console.log(val.clueImg);
+      await serviceCardUpdate(token, val);
+    })
+    setPopup(false);
+    setIsLoading(false)
+  }
+
+  const deleteCard = async () => {
+    setIsLoading(true)
+    setPopup(false);
+    setIsLoading(false)
+  }
+
   useEffect(() => {
-    setVal(prev => ({
+    setVal(prev => (memento ? {
+      ...memento,
+      cardCategory: category
+    } : {
       ...prev,
       cardCategory: category
     }))
-  }, [category]);
+
+    memento && setCurrentImage(memento.clueImg);
+  }, [memento, category]);
+
+  const checkType = (checkType: string) : boolean => {
+    return type === checkType;
+  } 
 
   return(
       <div className="flex flex-col justify-between">
           <div className="mb-4">
               <div className="flex justify-between">
-                  <p className="custom-text-3 font-bold text-text">Add Memento</p>
+                  <p className="custom-text-3 font-bold text-text">{ checkType("update") ? "Update Memento" : "Add Memento" }</p>
                   <div onClick={() => setPopup(false)}>
                       <IconContainer>
                           <Close/>
@@ -160,9 +226,16 @@ const MementoForm : React.FC<MementoFormProps>= ({ setPopup, memento, category }
               onChange={handleTextAreaChange}
               name="descriptionTxt"
               />
-              <ImageUploader setImage={setImage}/>
+              <ImageUploader setImage={setImage} imageUrl={memento?.clueImgUrl} setCurrentImage={setCurrentImage}/>
           </div>
-          <button className="custom-button mt-2 py-2 rounded-lg" onClick={createCard}>create</button>
+          {
+            checkType("update") 
+            ? (<div className="grid grid-cols-2 gap-4">
+              <button className="custom-button-alert py-2 rounded-lg">Delete</button>
+              <button onClick={updateCard} className="custom-button py-2 rounded-lg">Update</button>
+              </div>)
+            : (<button className="custom-button mt-2 py-2 rounded-lg" onClick={createCard}>create</button>)
+          }
       </div>
   )
 }
@@ -173,9 +246,7 @@ const Home = () => {
   const [cardCategories, setCardCategories] = useState<ICardCategory[]>([]);
   const [cardCategorySelected, setCardCategorySelected] = useState<ICardCategory>();
   const [cards, setCards] = useState<ICard[]>([]);
-  const { refreshDropdown, setRefreshDropdown} = useHome();
-  const [popUpMemento, setPopUpMemento] = useState(false);
-  const [selectedMemento, setSelectedMemento] = useState<ICard>();
+  const { refreshDropdown, setRefreshDropdown, popUpMemento, setPopUpMemento, selectedMemento, mementoFormType, setMementoFormType} = useHome();
 
   useFetchUser(authReady);
   
@@ -203,20 +274,25 @@ const Home = () => {
     setCards(result)
   }
 
+  const addMemento = () => {
+    setMementoFormType("add");
+    setPopUpMemento(true);
+  }
+
   return (
     <div>
       <Header/>
       <div className="custom-page">
         <div className="my-4 flex justify-between">
           <Dropdown optionsProp={cardCategories} onEmptyClick={createCardCategory} onOptionChange={getCardCategory}/>
-          <button onClick={() => setPopUpMemento(true)} className="text-main font-bold custom-text-1">Add</button>
+          <button onClick={addMemento} className="text-main font-bold custom-text-1">Add</button>
         </div>
         <hr className="border-t-2 border-sub"/>
         <div className="pt-4">
           <ListMemento listMemento={cards}/>
         </div>
       </div>
-      <CustomPopup isOpen={popUpMemento} children={<MementoForm setPopup={setPopUpMemento} memento={selectedMemento} category={cardCategorySelected}/>}/>
+      <CustomPopup isOpen={popUpMemento} children={<MementoForm setPopup={setPopUpMemento} memento={selectedMemento} category={cardCategorySelected} type={mementoFormType}/>}/>
     </div>
   );
 };

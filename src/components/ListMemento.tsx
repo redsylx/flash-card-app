@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { ICardCategory } from "./Dropdown";
+import { useHome } from "../contexts/Home";
 
 interface ICard {
   clueTxt: string;
   clueImg: string;
+  clueImgUrl: string;
   nFrequency: number;
   nCorrect: number;
   pctCorrect: number | null;
@@ -21,11 +23,19 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ card }) => {
   const [ flip, setFlip] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const { setSelectedMemento, setPopUpMemento, setMementoFormType } = useHome();
 
   const toggleMenu = (e) => {
     e.stopPropagation();
     setShowMenu(!showMenu);
   };
+
+  const actionEdit = (e) => {
+    e.stopPropagation();
+    setSelectedMemento(card);
+    setMementoFormType("update");
+    setPopUpMemento(true);
+  }
 
   if(!card || card.id === "0" ) {
     return (
@@ -45,21 +55,21 @@ const Card: React.FC<CardProps> = ({ card }) => {
           }
           </div>
           <div>
-          <MoreVertIcon
-            onClick={toggleMenu}
-            className="text-text cursor-pointer mt-1 hover:text-main"
-          />
-          {showMenu && (
-            <div className="absolute right-3 mt-2 w-24 bg-bg text-text rounded-lg border-2 border-sub">
-              <div className="px-4 py-2 cursor-pointer hover:bg-sub-alt rounded-t-lg">
-                Edit
+            <MoreVertIcon
+              onClick={toggleMenu}
+              className="text-text cursor-pointer mt-1 hover:text-main"
+            />
+            {showMenu && (
+              <div className="absolute right-3 mt-2 w-24 bg-bg text-text rounded-lg border-2 border-sub">
+                <div className="px-4 py-2 cursor-pointer hover:bg-sub-alt rounded-t-lg" onClick={actionEdit}>
+                  Edit
+                </div>
+                <div className="px-4 py-2 cursor-pointer hover:bg-sub-alt rounded-b-lg">
+                  Delete
+                </div>
               </div>
-              <div className="px-4 py-2 cursor-pointer hover:bg-sub-alt rounded-b-lg">
-                Delete
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
         </div>
       </div>
     )
@@ -69,31 +79,41 @@ const Card: React.FC<CardProps> = ({ card }) => {
     className="relative rounded-xl aspect-[16/9] md:aspect-[3/2] lg:aspect-[4/3] xl:aspect-[1/1] 2xl:aspect-[3/4] overflow-clip"
     onClick={() => setFlip(!flip)}
     >
-      { card.clueImg && (<div>
+      { card.clueImgUrl && (<div>
         <div
-        className={`absolute inset-0 ${card.clueImg ? 'bg-cover bg-center' : 'bg-bg'}`}
+        className={`absolute inset-0 ${card.clueImgUrl ? 'bg-cover bg-center' : 'bg-bg'}`}
         style={{
-          backgroundImage: card.clueImg ? `url(${card.clueImg})` : undefined,
+          backgroundImage: card.clueImgUrl ? `url(${card.clueImgUrl})` : undefined,
         }}
       ></div> <div className="absolute inset-0 bg-bg opacity-75"></div>
       </div>) }
-      {flip ? <div className="relative z-10 p-4 text-text break-words text-[4vw] md:text-[2.25vw] lg:text-[1.75vw] xl:text-[1.25vw]">
-        {card.descriptionTxt}
-      </div> 
-      :
-      <div className="relative z-10 p-4 text-text">
-          <div className="break-words font-bold text-text text-lg sm:text-xl md:text-2xl lg:text-3xl">
-            {card.clueTxt}
-          </div>
-          <div className="flex justify-between items-end mt-auto">
-            <div className="text-gray-400 text-sm">{card.nFrequency}x</div>
-            {card.pctCorrect !== null && (
-              <div className="text-pink-300 text-sm">{card.pctCorrect}%</div>
-            )}
-          </div>
-      </div>
-      }
       <div className="absolute inset-0 z-10 border-2 border-sub rounded-xl hover:border-main"></div>
+      <div className="relative z-10 p-4 text-text flex justify-between">
+        {
+            flip ? 
+            <div className="break-words text-[4vw] md:text-[2.25vw] lg:text-[1.75vw] xl:text-[1.25vw]">
+              {card.descriptionTxt}
+            </div> 
+            :
+            <div>
+              <div className="break-words font-bold text-text text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                {card.clueTxt}
+              </div>
+              <div className="flex justify-between items-end mt-auto">
+                <div className="text-gray-400 text-sm">{card.nFrequency}x</div>
+                {card.pctCorrect !== null && (
+                  <div className="text-pink-300 text-sm">{card.pctCorrect}%</div>
+                )}
+              </div>
+            </div>
+        }
+        <div>
+          <MoreVertIcon
+            onClick={actionEdit}
+            className="text-text cursor-pointer mt-1 hover:text-main"
+          />
+        </div>
+      </div>
     </div>
   );
 };
@@ -109,6 +129,7 @@ const ListMemento: React.FC<ListMementoProps> = ({ listMemento }) => {
       if(!listMemento || (listMemento && listMemento.length < 1)) {
         const defaultCard : ICard = {
           clueImg: "",
+          clueImgUrl: "",
           clueTxt: "No Cards Found :(",
           descriptionTxt: "Oops, nothing here",
           id: "0",

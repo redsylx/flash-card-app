@@ -4,7 +4,7 @@ const requestInit = (accessToken: string, method: string = 'get') : RequestInit 
         Authorization: `Bearer ${accessToken}`,
     };
 
-    if (method.toLowerCase() === 'post') {
+    if (['post', 'put'].includes(method.toLowerCase())) {
         headers['Content-Type'] = 'application/json';
     }
 

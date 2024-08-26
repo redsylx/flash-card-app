@@ -42,6 +42,10 @@
   @apply font-bold bg-sub-alt text-text hover:bg-sub hover:text-text
 }
 
+.custom-button-alert {
+  @apply font-bold bg-bg border-2 border-sub-alt text-sub hover:bg-error-1 hover:border-error-1 hover:text-bg 
+}
+
 .custom-icon-container {
   @apply bg-sub-alt rounded-full p-2
 }

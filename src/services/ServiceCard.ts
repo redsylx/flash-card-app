@@ -16,7 +16,15 @@ async function serviceCardCreate(accessToken: string, card: ICard) {
     return await fetch(url, init);
 }
 
+async function serviceCardUpdate(accessToken: string, card: ICard) {
+    const url = `${base_url}`;
+    const init = requestInit(accessToken, 'PUT');
+    init.body = JSON.stringify(card);
+    return await fetch(url, init);
+}
+
 export {
     serviceCardGetList,
-    serviceCardCreate
+    serviceCardCreate,
+    serviceCardUpdate
 }
