@@ -65,24 +65,35 @@ const Card: React.FC<CardProps> = ({ card }) => {
     )
   }
   return (
-    <div className="relative bg-bg border-2 border-sub p-4 rounded-xl text-text flex flex-col justify-between aspect-[16/9] md:aspect-[3/2] lg:aspect-[4/3] xl:aspect-[1/1] 2xl:aspect-[3/4] custom-card"
-    onClick={() => setFlip(!flip)}>
-      {flip ? <div className="break-words text-text text-[4vw] md:text-[2.25vw] lg:text-[1.75vw] xl:text-[1.25vw]">
+    <div 
+    className="relative rounded-xl aspect-[16/9] md:aspect-[3/2] lg:aspect-[4/3] xl:aspect-[1/1] 2xl:aspect-[3/4] overflow-clip"
+    onClick={() => setFlip(!flip)}
+    >
+      { card.clueImg && (<div>
+        <div
+        className={`absolute inset-0 ${card.clueImg ? 'bg-cover bg-center' : 'bg-bg'}`}
+        style={{
+          backgroundImage: card.clueImg ? `url(${card.clueImg})` : undefined,
+        }}
+      ></div> <div className="absolute inset-0 bg-bg opacity-75"></div>
+      </div>) }
+      {flip ? <div className="relative z-10 p-4 text-text break-words text-[4vw] md:text-[2.25vw] lg:text-[1.75vw] xl:text-[1.25vw]">
         {card.descriptionTxt}
-      </div>
+      </div> 
       :
-      <div>
-        <div className="break-words font-bold text-text text-lg sm:text-xl md:text-2xl lg:text-3xl">
-          {card.clueTxt}
-        </div>
-        <div className="flex justify-between items-end mt-auto">
-          <div className="text-gray-400 text-sm">{card.nFrequency}x</div>
-          {card.pctCorrect !== null && (
-            <div className="text-pink-300 text-sm">{card.pctCorrect}%</div>
-          )}
-        </div>
+      <div className="relative z-10 p-4 text-text">
+          <div className="break-words font-bold text-text text-lg sm:text-xl md:text-2xl lg:text-3xl">
+            {card.clueTxt}
+          </div>
+          <div className="flex justify-between items-end mt-auto">
+            <div className="text-gray-400 text-sm">{card.nFrequency}x</div>
+            {card.pctCorrect !== null && (
+              <div className="text-pink-300 text-sm">{card.pctCorrect}%</div>
+            )}
+          </div>
       </div>
       }
+      <div className="absolute inset-0 z-10 border-2 border-sub rounded-xl hover:border-main"></div>
     </div>
   );
 };

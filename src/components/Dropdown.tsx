@@ -219,7 +219,7 @@ const Dropdown : React.FC<DropdownProps> = ({ optionsProp, onEmptyClick, onOptio
         <div className="me-4">
             <DropdownButton onClick={toggleDropdown} selectedOption={selectedOption.name} />
             {isOpen && (
-            <div className="absolute z-10 mt-4 bg-sub-alt border-2 border-sub rounded-xl min-w-[300px]">
+            <div className="absolute z-20 mt-4 bg-sub-alt border-2 border-sub rounded-xl min-w-[300px]">
                 <DropdownSearch placeholder="find or create category" onSearchChange={(e) => setSearchTerm(e.target.value)}/>
                 <DropdownOptions options={optionsToShow} onOptionClick={handleOptionClick} keyword={searchTerm} onEmptyClick={handleEmptyClick}/>
             </div>
