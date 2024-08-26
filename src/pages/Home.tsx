@@ -123,6 +123,7 @@ const MementoForm : React.FC<MementoFormProps>= ({ setPopup, memento, category, 
   const { setIsLoading } = useLoading();
   const [image, setImage] = useState<File | null>(null);
   const [currentImage, setCurrentImage] = useState<string>("");
+  const { setRefreshListMemento, refreshListMemento } = useHome();
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setVal(prev => ({
         ...prev,
@@ -151,6 +152,7 @@ const MementoForm : React.FC<MementoFormProps>= ({ setPopup, memento, category, 
         }
       }
       await serviceCardCreate(token, val);
+      setRefreshListMemento(!refreshListMemento)
     })
     setPopup(false);
     setIsLoading(false)
@@ -170,8 +172,8 @@ const MementoForm : React.FC<MementoFormProps>= ({ setPopup, memento, category, 
         }
       }
       if(!currentImage) val.clueImg = "";
-      console.log(val.clueImg);
       await serviceCardUpdate(token, val);
+      setRefreshListMemento(!refreshListMemento)
     })
     setPopup(false);
     setIsLoading(false)
@@ -246,7 +248,7 @@ const Home = () => {
   const [cardCategories, setCardCategories] = useState<ICardCategory[]>([]);
   const [cardCategorySelected, setCardCategorySelected] = useState<ICardCategory>();
   const [cards, setCards] = useState<ICard[]>([]);
-  const { refreshDropdown, setRefreshDropdown, popUpMemento, setPopUpMemento, selectedMemento, mementoFormType, setMementoFormType} = useHome();
+  const { refreshDropdown, setRefreshDropdown, popUpMemento, setPopUpMemento, selectedMemento, mementoFormType, setMementoFormType, refreshListMemento} = useHome();
 
   useFetchUser(authReady);
   
@@ -261,6 +263,14 @@ const Home = () => {
     getOptions();
   }, [authReady, user, refreshDropdown])
 
+  useEffect(() => {
+    if(!authReady || !user.id || !cardCategorySelected) return
+    const run = async () => {
+      await getCards(cardCategorySelected.id);
+    }
+    run();
+  }, [refreshListMemento])
+
   const createCardCategory = async (newCategoryName: string) => {
     const token = await getIdToken();
     await (await serviceCardCategoryCreate(token, user.id, newCategoryName)).json();
@@ -269,8 +279,12 @@ const Home = () => {
 
   const getCardCategory = async (cardCategory: ICardCategory) => {
     setCardCategorySelected(cardCategory);
+    await getCards(cardCategory.id);
+  }
+
+  const getCards = async (categoryId: string) => {
     const token = await getIdToken();
-    const result : ICard[] = (await (await serviceCardGetList(token, cardCategory.id)).json()).items;
+    const result : ICard[] = (await (await serviceCardGetList(token, categoryId, "SortOrder=desc")).json()).items;
     setCards(result)
   }
 

@@ -3,8 +3,8 @@ import { requestInit, serviceDomain } from "./ServiceBase";
 
 const base_url = `${serviceDomain}card`
 
-async function serviceCardGetList (accessToken: string, categoryId: string) {
-    const url = `${base_url}/list?cardCategoryId=${encodeURIComponent(categoryId)}`;
+async function serviceCardGetList (accessToken: string, categoryId: string, ...filters: string[]) {
+    let url = `${base_url}/list?cardCategoryId=${encodeURIComponent(categoryId)}&${filters.join('&')}`;
     const init = requestInit(accessToken);
     return await fetch(url, init);
 }

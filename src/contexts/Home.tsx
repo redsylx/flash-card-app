@@ -4,6 +4,8 @@ import { ICard } from '../components/ListMemento';
 interface HomeContextType {
     refreshDropdown: boolean;
     setRefreshDropdown: React.Dispatch<React.SetStateAction<boolean>>;
+    refreshListMemento: boolean;
+    setRefreshListMemento: React.Dispatch<React.SetStateAction<boolean>>;
     popUpMemento: boolean;
     setPopUpMemento: React.Dispatch<React.SetStateAction<boolean>>;
     selectedMemento: ICard | undefined;
@@ -28,12 +30,13 @@ interface HomeProviderProps {
 
 export const HomeProvider: React.FC<HomeProviderProps> = ({ children }) => {
   const [refreshDropdown, setRefreshDropdown] = useState(false);
+  const [refreshListMemento, setRefreshListMemento] = useState(false);
   const [popUpMemento, setPopUpMemento] = useState(false);
   const [selectedMemento, setSelectedMemento] = useState<ICard>();
   const [mementoFormType, setMementoFormType] = useState<"add" | "update">("add");
 
   return (
-    <HomeContext.Provider value={{ refreshDropdown, setRefreshDropdown, popUpMemento, setPopUpMemento, selectedMemento, setSelectedMemento, mementoFormType, setMementoFormType}}>
+    <HomeContext.Provider value={{ refreshDropdown, setRefreshDropdown, refreshListMemento, setRefreshListMemento, popUpMemento, setPopUpMemento, selectedMemento, setSelectedMemento, mementoFormType, setMementoFormType }}>
       {children}
     </HomeContext.Provider>
   );
