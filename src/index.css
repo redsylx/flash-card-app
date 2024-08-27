@@ -71,11 +71,11 @@
 }
 
 .custom-header {
-  @apply backdrop-blur-sm sticky top-0 z-10
+  @apply backdrop-blur-sm sticky top-0 z-[51]
 }
 
 .custom-page {
-  @apply px-4
+  @apply px-4 pb-4
 }
 
 .custom-app {
@@ -100,4 +100,8 @@
 
 .custom-text-1 {
   @apply text-base
+}
+
+.text-shadow {
+  text-shadow: 0px 1px 2px var(--bg-color);
 }

@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useState } from "react";
 import LoginCard from "../components/LoginCard";
-import { IconContainer } from "../components/CustomIcon";
+import { IconContainer } from "../components/IconContainer";
 import { Google } from "@mui/icons-material";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, browserSessionPersistence, setPersistence } from "firebase/auth";
 import { auth } from "../firebase";

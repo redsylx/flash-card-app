@@ -1,39 +1,38 @@
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from "./routes";
-import { useEffect } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase';
+import { useEffect, useState } from "react";
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import Loading, { useLoading } from "./components/Loading";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./routes";
+import { useFetchUser } from "./hooks";
 
-const BtnLogin = () => {
-  const navigate = useNavigate();
-  return(
-    <button 
-      onClick={() => navigate(ROUTES.LOGIN)}
-      className="bg-sub-alt py-6 min-w-[300px] font-bold custom-text-2 rounded-xl custom-button">Login</button>
-  )
-}
+const App = () => {
+  const [isAuthReady, setIsAuthReady] = useState(false);
+  const userFinish = useFetchUser(isAuthReady);
+  const { setLoading } = useLoading();
 
-function App() {
-  const navigate = useNavigate();
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if(user) navigate(ROUTES.HOME);
-  })
+    const unsubscribe = onAuthStateChanged(auth, () => {
+      setIsAuthReady(true);
+    });
+    
+    return () => unsubscribe();
+  }, []);
 
-  return () => unsubscribe();
-  }, [])
+  useEffect(() => {
+    setLoading(!userFinish); 
+  }, [userFinish])
+
+  if (!userFinish) {
+    return <Loading/>;
+  }
+
   return (
-    <>
-        <div className="flex items-center min-h-screen custom-page">
-          <div>
-            <p className="font-bold custom-text-5 text-main mb-4">memento</p>
-            <p className="custom-text-3 italic mb-12">/məˈmen.toʊ/</p>
-            <p className="custom-text-3 font-light text-text max-w-[750px] mb-16">an object that you keep to remember a person, place, or event</p>
-            <BtnLogin/>
-          </div>
-        </div>
-    </>
-  )
-}
+    <div>
+      <RouterProvider router={router}/>
+      <Loading/>
+    </div>
+  );
+};
 
-export default App
+export default App;

@@ -1,4 +1,4 @@
-import { ICard } from "../components/ListMemento";
+import ICard from "../interfaces/ICard";
 import { requestInit, serviceDomain } from "./ServiceBase";
 
 const base_url = `${serviceDomain}card`
@@ -23,8 +23,15 @@ async function serviceCardUpdate(accessToken: string, card: ICard) {
     return await fetch(url, init);
 }
 
+async function serviceCardDelete(accessToken: string, cardId: string) {
+    const url = `${base_url}?cardId=${cardId}`;
+    const init = requestInit(accessToken, 'DELETE');
+    return await fetch(url, init);
+}
+
 export {
     serviceCardGetList,
     serviceCardCreate,
-    serviceCardUpdate
+    serviceCardUpdate,
+    serviceCardDelete
 }

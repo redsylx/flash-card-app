@@ -3,15 +3,25 @@ import { serviceAuthGet, serviceAuthUpdate} from "../services/ServiceAuth";
 import { useNavigate } from "react-router-dom";
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import { ROUTES } from "../routes";
-import { auth } from "../firebase";
-import { useAuthState } from "../hooks";
+import { getIdToken } from "../firebase";
+import IAccount from "../interfaces/IAccount";
+import { useAccount } from "../store";
+import { useFetchUser } from "../hooks";
 
-const UsernameRequest : React.FC = () => {
+export default () => {
     const [username, setUsername] = useState("");
-    const navigate = useNavigate();
+    const { account } = useAccount();
+    const [isUsernameFilled, setUsernameFilled] = useState(false);
+
+    useFetchUser(isUsernameFilled);
+
+    useEffect(() => {
+        if(account.username) navigate(ROUTES.HOME)
+    }, [account])
 
     const authUpdate = async () => {
-        if(await serviceAuthUpdate('', username)) navigate(ROUTES.HOME)
+        const token = await getIdToken();
+        if(await serviceAuthUpdate(token, username)) setUsernameFilled(true)
     }
     const isUsernameValid = () => {
         return username.length > 3;
@@ -26,8 +36,23 @@ const UsernameRequest : React.FC = () => {
         }
     };
 
+    const navigate = useNavigate();
+    const [isUsernameExist, setUsernameExist] = useState(true);
+    useEffect(() => {
+        const getUser = async () => {
+            const token = await getIdToken();
+            const account = (await (await serviceAuthGet(token)).json()) as IAccount;
+            setUsernameExist(account.username === "");
+            if(account.username) setUsernameFilled(true);
+        }
+
+        getUser();
+    },[])
+    
     return(
-        <div>
+        <div className="flex items-center min-h-screen custom-page">
+            {isUsernameExist ? <p>Authenticating . . .</p> : 
+            <div>
             <p className="custom-text-4 mb-4">umm . . .</p>
             <p className="custom-text-4 mb-8">what should we call you?</p>
             <div className="flex items-center" id="SSS">
@@ -47,30 +72,7 @@ const UsernameRequest : React.FC = () => {
                 </button>
             </div>
         </div>
-    )
-}
-
-export default () => {
-    const navigate = useNavigate();
-    const [isUsernameExist, setUsernameExist] = useState(true);
-    const authReady = useAuthState();
-
-    useEffect(() => {
-        if(!authReady) return;
-
-        const getUser = async () => {
-            const token = await auth.currentUser?.getIdToken() ?? "";
-            const { username } = await (await serviceAuthGet(token)).json();
-            setUsernameExist(username);
-            if(username) navigate(ROUTES.HOME);
-        }
-
-        getUser();
-    }, [authReady])
-    
-    return(
-        <div className="flex items-center min-h-screen custom-page">
-            {isUsernameExist ? <p>Authenticating . . .</p> : <UsernameRequest/>}
+            }
         </div>
     )
 }

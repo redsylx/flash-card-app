@@ -1,14 +1,14 @@
-import { configureStore, Store } from '@reduxjs/toolkit';
-import userReducer from './reducers/user';
-import popUpReducer from './reducers/popUp';
+import { create } from 'zustand';
+import IAccount, { defaultAccount } from './interfaces/IAccount';
 
-export const store : Store = configureStore({
-  reducer: {
-    user: userReducer,
-    popUp: popUpReducer
-  },
-});
+type AccountState = {
+  account: IAccount;
+  setAccount: (newAccount: IAccount) => void;
+}
 
-export type AppStore = typeof store
-export type RootState = ReturnType<AppStore['getState']>
-export type AppDispatch = AppStore['dispatch']
+const useAccount = create<AccountState>((set) => ({
+  account: defaultAccount,
+  setAccount: (newAccount) => set(() => ({ account: newAccount })),
+}));
+
+export { useAccount };

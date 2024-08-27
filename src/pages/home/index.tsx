@@ -1,0 +1,79 @@
+import { useEffect } from "react";
+import Header from "../../components/Header";
+import Dropdown from "./components/Dropdown";
+import { getIdToken } from "../../firebase";
+import { useAccount } from "../../store";
+import useDropdown from "./components/Dropdown/store";
+import useCard from "./components/Card/store";
+import ICardCategory, { defaultCardCategory } from "../../interfaces/ICardCategory";
+import { serviceCardCategoryGetList } from "../../services/ServiceCardCategory";
+import { serviceCardGetList } from "../../services/ServiceCard";
+import { defaultCard, emptyCard } from "../../interfaces/ICard";
+import { CustomPopup } from "../../components/PopUp";
+import usePopup from "./components/Popup/store";
+import CardCategory from "./components/Popup/CardCategory";
+import CardPopup from "./components/Popup/Card";
+import Card from "./components/Card";
+
+export default () => {
+  const { account } = useAccount();
+  const dropdown = useDropdown();
+  const card = useCard();
+  const popup = usePopup();
+
+  useEffect(() => {
+    const fetchCardCategories = async () => {
+      const token = await getIdToken();
+      const categories : ICardCategory[] = await (await serviceCardCategoryGetList(token, account.id)).json();
+      const defaultCategory = categories.find(p => p.name === "default") || defaultCardCategory;
+
+      dropdown.setCardCategories(categories);
+      dropdown.setPrevSelectedCardCategory(dropdown.selectedCardCategory);
+      dropdown.setSelectedCardCategory(
+        dropdown.selectedCardCategory.name
+          ? categories.find(p => p.id === dropdown.selectedCardCategory.id) || defaultCategory
+          : defaultCategory
+      );
+    };
+
+    fetchCardCategories();
+  }, [dropdown.refresh]);
+
+  useEffect(() => {
+    const fetchCards = async (categoryId: string) => {
+      if (!categoryId) return;
+      const token = await getIdToken();
+      const cards = (await (await serviceCardGetList(token, categoryId, "SortOrder=desc")).json()).items;
+      card.setCards(cards);
+    };
+
+    fetchCards(dropdown.selectedCardCategory.id);
+  }, [dropdown.selectedCardCategory, card.refresh, dropdown.refresh]);
+
+  useEffect(() => {
+    if(card.cards.length != 0) return;
+    card.setCards([emptyCard]);
+  }, [card.cards])
+
+  return (
+    <div>
+      <Header />
+      <div className="custom-page">
+        <div className="my-4 flex justify-between">
+          <Dropdown />
+          <button onClick={() => { popup.setSelectedCard(defaultCard); popup.setStateCard("add"); popup.setIsCardOpen(true) }} className="text-main font-bold custom-text-1">Add</button>
+        </div>
+        <hr className="border-t-2 border-sub" />
+        <div className="pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+            {card.cards.map((item) => (
+              <Card key={item.id} card={item} />
+            ))}
+          </div>
+        </div>
+      </div>
+      <CustomPopup isOpen={popup.isCardCategoryOpen} children={<CardCategory/>}/>
+      <CustomPopup isOpen={popup.isCardOpen} children={<CardPopup/>}/>
+    </div>
+  );
+};

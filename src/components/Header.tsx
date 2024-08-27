@@ -1,14 +1,14 @@
 import { Home, PlayArrow, LibraryBooks, Logout } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '../routes';
-import { IconContainer } from './CustomIcon';
+import { IconContainer } from './IconContainer';
 import { auth } from '../firebase';
-import { useAppSelector } from '../hooks';
+import { useAccount } from '../store';
 
 export default () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const user = useAppSelector(p => p.user);
+    const { account } = useAccount();
 
     const navigateRoute = (route : string) => {
         if (route === location.pathname) return
@@ -39,7 +39,7 @@ export default () => {
                 </div>
             </div>
             <div className="flex items-center">
-                <p className='custom-text-1 text-sub mr-4'>{user.username ? user.username : '. . .'}</p>
+                <p className='custom-text-1 text-sub mr-4'>{account.username ? account.username : '. . .'}</p>
                 <div onClick={logout}>
                     <IconContainer>
                         <Logout/>
