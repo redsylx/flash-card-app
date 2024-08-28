@@ -3,6 +3,7 @@ import Index from './pages/index'
 import Home from './pages/home/index'
 import Login from './pages/Login'
 import Auth from './pages/Auth'
+import Game from "./pages/game";
 
 export const ROUTES = {
     AUTH: '/auth',
@@ -31,6 +32,11 @@ const routeObject : RouteObject[] = [
     path: ROUTES.AUTH,
     element: <Auth/>
   },
+  {
+    path: ROUTES.GAME,
+    element: <Game/>
+  },
+  
 ]
   
 export const router = createBrowserRouter(routeObject)

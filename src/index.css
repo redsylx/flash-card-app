@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+::-webkit-scrollbar {
+  width: 0px;
+}
+
 :root {
   font-family: 'Poppins', sans-serif;
   line-height: 1.5;
@@ -39,7 +43,11 @@
 }
 
 .custom-button {
-  @apply font-bold bg-sub-alt text-text hover:bg-sub hover:text-text
+  @apply font-bold bg-sub-alt text-text hover:bg-sub hover:text-text disabled:bg-bg disabled:text-sub-alt disabled:border-2 disabled:border-sub-alt
+}
+
+.custom-button-alt {
+  @apply font-bold bg-bg text-text hover:bg-sub-alt hover:text-text
 }
 
 .custom-button-alert {
@@ -104,4 +112,12 @@
 
 .text-shadow {
   text-shadow: 0px 1px 2px var(--bg-color);
+}
+
+.custom-table-header {
+  @apply px-10 py-5 custom-text-2
+}
+
+.custom-table-row {
+  @apply px-10 py-5 custom-text-1
 }

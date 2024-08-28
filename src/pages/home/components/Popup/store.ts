@@ -20,7 +20,7 @@ type PopupState = {
   setStateCard: (state: "add" | "update") => void;
 }
 
-const usePopup = create<PopupState>((set) => ({
+const createUsePopup = () => create<PopupState>((set) => ({
   isCardCategoryOpen: false,
   isCardOpen: false,
   selectedCardCategory: defaultCardCategory,
@@ -36,7 +36,10 @@ const usePopup = create<PopupState>((set) => ({
   setStateCard: (state) => set(() => ({ stateCard: state })),
 }));
 
+const usePopup = createUsePopup();
+
 export default usePopup;
 export type {
+  PopupState,
   PopupCardState
 }

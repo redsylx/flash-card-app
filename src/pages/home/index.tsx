@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import Dropdown from "./components/Dropdown";
 import { getIdToken } from "../../firebase";
@@ -16,6 +16,8 @@ import CardPopup from "./components/Popup/Card";
 import Card from "./components/Card";
 
 export default () => {
+  const [ firstRender, setFirstRender ] = useState(true);
+  const [ firstRender2, setFirstRender2 ] = useState(true);
   const { account } = useAccount();
   const dropdown = useDropdown();
   const card = useCard();
@@ -26,7 +28,6 @@ export default () => {
       const token = await getIdToken();
       const categories : ICardCategory[] = await (await serviceCardCategoryGetList(token, account.id)).json();
       const defaultCategory = categories.find(p => p.name === "default") || defaultCardCategory;
-
       dropdown.setCardCategories(categories);
       dropdown.setPrevSelectedCardCategory(dropdown.selectedCardCategory);
       dropdown.setSelectedCardCategory(
@@ -34,20 +35,24 @@ export default () => {
           ? categories.find(p => p.id === dropdown.selectedCardCategory.id) || defaultCategory
           : defaultCategory
       );
+      setFirstRender(false);
     };
 
-    fetchCardCategories();
+    if(firstRender && dropdown.cardCategories.length != 0) setFirstRender(false)
+    else fetchCardCategories();
   }, [dropdown.refresh]);
 
   useEffect(() => {
     const fetchCards = async (categoryId: string) => {
+      setFirstRender2(false)
       if (!categoryId) return;
       const token = await getIdToken();
       const cards = (await (await serviceCardGetList(token, categoryId, "SortOrder=desc")).json()).items;
       card.setCards(cards);
     };
 
-    fetchCards(dropdown.selectedCardCategory.id);
+    if(firstRender2 && dropdown.cardCategories.length != 0) setFirstRender2(false)
+    else fetchCards(dropdown.selectedCardCategory.id);
   }, [dropdown.selectedCardCategory, card.refresh, dropdown.refresh]);
 
   useEffect(() => {
@@ -60,7 +65,7 @@ export default () => {
       <Header />
       <div className="custom-page">
         <div className="my-4 flex justify-between">
-          <Dropdown />
+          <Dropdown dropdown={dropdown}/>
           <button onClick={() => { popup.setSelectedCard(defaultCard); popup.setStateCard("add"); popup.setIsCardOpen(true) }} className="text-main font-bold custom-text-1">Add</button>
         </div>
         <hr className="border-t-2 border-sub" />

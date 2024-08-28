@@ -4,6 +4,7 @@ import ICardCategory, { defaultCardCategory } from '../../../../interfaces/ICard
 type DropdownState = {
   prevSelectedCardCategory: ICardCategory;
   selectedCardCategory: ICardCategory;
+  selectedCardCategories: ICardCategory[];
   cardCategories: ICardCategory[];
   searchTerm: string;
   cardCategoriesToShow: ICardCategory[];
@@ -12,6 +13,7 @@ type DropdownState = {
 
   setPrevSelectedCardCategory: (cardCategory: ICardCategory) => void;
   setSelectedCardCategory: (cardCategory: ICardCategory) => void;
+  setSelectedCardCategories: (cardCategories: ICardCategory[]) => void;
   setCardCategories: (cardCategories: ICardCategory[]) => void;
   setSearchTerm: (searchTerm: string) => void;
   setCardCategoriesToShow: (cardCategories: ICardCategory[]) => void;
@@ -19,9 +21,10 @@ type DropdownState = {
   setRefresh: (refresh: boolean) => void;
 }
 
-const useDropdown = create<DropdownState>((set) => ({
+const createDropdownStore = () => create<DropdownState>((set) => ({
   prevSelectedCardCategory: defaultCardCategory,
   selectedCardCategory: defaultCardCategory,
+  selectedCardCategories: [],
   cardCategories: [],
   searchTerm: "",
   cardCategoriesToShow: [],
@@ -29,11 +32,18 @@ const useDropdown = create<DropdownState>((set) => ({
   refresh: false,
   setPrevSelectedCardCategory: (cardCategory) => set(() => ({ prevSelectedCardCategory: cardCategory })),
   setSelectedCardCategory: (cardCategory) => set(() => ({ selectedCardCategory: cardCategory })),
+  setSelectedCardCategories: (cardCategories) => set(() => ({ selectedCardCategories: cardCategories })),
   setCardCategories: (cardCategories) => set(() => ({ cardCategories: cardCategories })),
-  setSearchTerm: (term) => set(() => ({searchTerm: term})),
+  setSearchTerm: (term) => set(() => ({ searchTerm: term })),
   setCardCategoriesToShow: (cardCategories) => set(() => ({ cardCategoriesToShow: cardCategories })),
-  setIsOpen: (bool) => set(() => ({isOpen: bool})),
-  setRefresh: (bool) => set(() => ({refresh: bool})),
+  setIsOpen: (bool) => set(() => ({ isOpen: bool })),
+  setRefresh: (bool) => set(() => ({ refresh: bool })),
 }));
 
-export default useDropdown;
+// Use the factory function to create two separate stores
+const useDropdown1 = createDropdownStore();
+const useDropdown2 = createDropdownStore();
+
+export default useDropdown1;
+export { useDropdown2 };
+export type { DropdownState };

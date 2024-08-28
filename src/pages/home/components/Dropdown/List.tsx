@@ -1,14 +1,17 @@
 import { Edit } from "@mui/icons-material";
 import usePopup from "../Popup/store";
-import useDropdown from "./store";
 import ICardCategory from "../../../../interfaces/ICardCategory";
 import { getIdToken } from "../../../../firebase";
 import { serviceCardCategoryCreate } from "../../../../services/ServiceCardCategory";
 import { useAccount } from "../../../../store";
+import { DropdownState } from "./store";
 
-export default () => {
+interface IProps {
+    dropdown: DropdownState;
+}
+
+const List : React.FC<IProps> = ({ dropdown }) => {
   const account = useAccount();
-  const dropdown = useDropdown();
   const popup = usePopup();
   const lastOptions = dropdown.cardCategoriesToShow[Math.max(0, dropdown.cardCategoriesToShow.length-1)];
 
@@ -58,3 +61,5 @@ export default () => {
       </div>
   );
 };
+
+export default List;
