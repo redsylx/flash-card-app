@@ -41,9 +41,8 @@ const createDropdownStore = () => create<DropdownState>((set) => ({
 }));
 
 // Use the factory function to create two separate stores
-const useDropdown1 = createDropdownStore();
-const useDropdown2 = createDropdownStore();
+const useHomeDropdown = createDropdownStore();
+const useGameDropdown = createDropdownStore();
 
-export default useDropdown1;
-export { useDropdown2 };
+export { useHomeDropdown, useGameDropdown };
 export type { DropdownState };

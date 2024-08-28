@@ -2,7 +2,6 @@ import { ChangeEvent, useEffect } from "react";
 import useCard from "../Card/store";
 import usePopup, { PopupCardState } from "./store";
 import { useLoading } from "../../../../components/Loading";
-import useDropdown from "../Dropdown/store";
 import { asyncProcess } from "../../../../utils/loading";
 import { getIdToken } from "../../../../firebase";
 import { IGetUploadProp, serviceUpload, serviceUploadGetUploadImageUrl } from "../../../../services/ServiceUpload";
@@ -11,12 +10,13 @@ import { IconContainer } from "../../../../components/IconContainer";
 import { Close } from "@mui/icons-material";
 import ImageUploader from "../ImageUploader";
 import useImageUploader from "../ImageUploader/store";
+import { useHomeDropdown } from "../Dropdown/store";
 
 export default () => {
   const card = useCard();
   const popup = usePopup();
   const loading = useLoading();
-  const dropdown = useDropdown();
+  const dropdown = useHomeDropdown();
   const image = useImageUploader();
 
   useEffect(() => image.setPreviewUrl(popup.selectedCard.clueImgUrl), [])

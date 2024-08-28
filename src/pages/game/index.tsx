@@ -1,12 +1,16 @@
 import { useEffect } from "react";
 import Header from "../../components/Header"
-import useDropdown, { useDropdown2 } from "../home/components/Dropdown/store";
 import Dropdown from "./Dropdown";
 import GroupButton, { useGuessTime, useNumberOfMemento } from "./Dropdown/GroupButton";
 import { serviceCardCategoryGetList } from "../../services/ServiceCardCategory";
 import { useAccount } from "../../store";
 import { getIdToken } from "../../firebase";
 import ICardCategory from "../../interfaces/ICardCategory";
+import { useGameDropdown, useHomeDropdown } from "../home/components/Dropdown/store";
+import { ICreateGameDto, IGame } from "../../interfaces/IGame";
+import { useLoading } from "../../components/Loading";
+import { serviceGameCreate } from "../../services/ServiceGame";
+import usePlay from "../play/store";
 
 const GameHistoryTable = () => {
   const data = [
@@ -103,10 +107,11 @@ const GameHistoryTable = () => {
 };
 
 export default () => {
-  const dropdownT = useDropdown();
-  const dropdown = useDropdown2();
+  const homeDropdown = useHomeDropdown();
+  const dropdown = useGameDropdown();
   const numberOfMemento = useNumberOfMemento();
   const guessTime = useGuessTime();
+  const loading = useLoading();
   const { account } = useAccount();
 
   useEffect(() => {
@@ -121,17 +126,37 @@ export default () => {
     }
     
     const fetchCardCategories = async () => {
-      if(dropdownT.cardCategories.length == 0) {
+      if(homeDropdown.cardCategories.length == 0) {
         const token = await getIdToken();
         const categories : ICardCategory[] = await (await serviceCardCategoryGetList(token, account.id)).json();
         dropdown.setCardCategories(categories.filter(p => p.nCard !== 0));
       } else {
-        dropdown.setCardCategories(dropdownT.cardCategories.filter(p => p.nCard !== 0))
+        dropdown.setCardCategories(homeDropdown.cardCategories.filter(p => p.nCard !== 0))
       }
     };
 
     fetchCardCategories();
   },[])
+
+  const onPlayClick = async () => {
+    if(dropdown.selectedCardCategories.length == 0) return
+    var dto : ICreateGameDto = {
+      accountId: account.id,
+      categoryIds: dropdown.selectedCardCategories.map(p => p.id),
+      hideDurationInSecond: parseInt(guessTime.selected),
+      nCard: parseInt(numberOfMemento.selected)
+    }
+
+    try {
+      loading.setLoading(true)
+      const token = await getIdToken();
+      const game : IGame = await (await serviceGameCreate(token, dto)).json();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      loading.setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -159,7 +184,10 @@ export default () => {
         
         {/* Middle div */}
         <div className="flex justify-center h-[300px]">
-            <button disabled={dropdown.selectedCardCategories.length == 0} className="custom-button h-16 w-40 rounded-xl custom-text-2">Play</button>
+            <button
+              onClick={onPlayClick} 
+              disabled={dropdown.selectedCardCategories.length == 0} 
+              className="custom-button h-16 w-40 rounded-xl custom-text-2">Play</button>
         </div>
         <div>
           <GameHistoryTable/>

@@ -4,12 +4,13 @@ import Home from './pages/home/index'
 import Login from './pages/Login'
 import Auth from './pages/Auth'
 import Game from "./pages/game";
+import Play from "./pages/play";
 
 export const ROUTES = {
     AUTH: '/auth',
     HOME: '/home',
-    HOME2: '/home2',
     GAME: '/game',
+    PLAY: '/play/:gameId',
     LIBRARY: '/library',
     LOGIN: '/login',
     BASE: '/'
@@ -35,6 +36,10 @@ const routeObject : RouteObject[] = [
   {
     path: ROUTES.GAME,
     element: <Game/>
+  },
+  {
+    path: ROUTES.PLAY,
+    element: <Play/>
   },
   
 ]

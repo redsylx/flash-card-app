@@ -3,7 +3,6 @@ import Header from "../../components/Header";
 import Dropdown from "./components/Dropdown";
 import { getIdToken } from "../../firebase";
 import { useAccount } from "../../store";
-import useDropdown from "./components/Dropdown/store";
 import useCard from "./components/Card/store";
 import ICardCategory, { defaultCardCategory } from "../../interfaces/ICardCategory";
 import { serviceCardCategoryGetList } from "../../services/ServiceCardCategory";
@@ -14,12 +13,13 @@ import usePopup from "./components/Popup/store";
 import CardCategory from "./components/Popup/CardCategory";
 import CardPopup from "./components/Popup/Card";
 import Card from "./components/Card";
+import { useHomeDropdown } from "./components/Dropdown/store";
 
 export default () => {
   const [ firstRender, setFirstRender ] = useState(true);
   const [ firstRender2, setFirstRender2 ] = useState(true);
   const { account } = useAccount();
-  const dropdown = useDropdown();
+  const dropdown = useHomeDropdown();
   const card = useCard();
   const popup = usePopup();
 

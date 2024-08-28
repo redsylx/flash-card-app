@@ -1,5 +1,4 @@
 import { ChangeEvent, useState } from "react";
-import useDropdown from "../Dropdown/store";
 import usePopup from "./store";
 import { IconContainer } from "../../../../components/IconContainer";
 import { Close } from "@mui/icons-material";
@@ -8,10 +7,11 @@ import { asyncProcess } from "../../../../utils/loading";
 import { getIdToken } from "../../../../firebase";
 import { serviceCardCategoryDelete, serviceCardCategoryUpdate } from "../../../../services/ServiceCardCategory";
 import { useAccount } from "../../../../store";
+import { useHomeDropdown } from "../Dropdown/store";
 
 export default () => {
   const popup = usePopup();
-  const dropdown = useDropdown();
+  const dropdown = useHomeDropdown();
   const { account } = useAccount();
   const { setLoading } = useLoading();
   const [val, setVal] = useState(popup.selectedCardCategory.name);
