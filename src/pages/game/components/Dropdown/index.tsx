@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import List from "./List";
-import { DropdownState } from "../../home/components/Dropdown/store";
+import { DropdownState } from "../../../home/components/Dropdown/store";
 
 interface IDropdownProps {
     dropdown: DropdownState;

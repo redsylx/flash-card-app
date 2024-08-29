@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import ICardCategory from '../../../interfaces/ICardCategory';
-import { DropdownState } from '../../home/components/Dropdown/store';
+import React, { useState } from 'react';
+import ICardCategory from '../../../../interfaces/ICardCategory';
+import { DropdownState } from '../../../home/components/Dropdown/store';
 
 interface ListItemProps {
   cardCategory: ICardCategory;

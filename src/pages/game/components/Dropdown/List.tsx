@@ -1,6 +1,4 @@
-import { useState } from "react";
-import ICardCategory from "../../../interfaces/ICardCategory";
-import { DropdownState } from "../../home/components/Dropdown/store";
+import { DropdownState } from "../../../home/components/Dropdown/store";
 import ListItem from "./ListItem";
 
 interface IProps {

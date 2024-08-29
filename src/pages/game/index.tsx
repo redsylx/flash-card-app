@@ -1,16 +1,20 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../components/Header"
-import Dropdown from "./Dropdown";
-import GroupButton, { useGuessTime, useNumberOfMemento } from "./Dropdown/GroupButton";
 import { serviceCardCategoryGetList } from "../../services/ServiceCardCategory";
 import { useAccount } from "../../store";
 import { getIdToken } from "../../firebase";
 import ICardCategory from "../../interfaces/ICardCategory";
 import { useGameDropdown, useHomeDropdown } from "../home/components/Dropdown/store";
-import { ICreateGameDto, IGame } from "../../interfaces/IGame";
+import { defaultGame, ICreateGameDto, IGame } from "../../interfaces/IGame";
 import { useLoading } from "../../components/Loading";
-import { serviceGameCreate } from "../../services/ServiceGame";
-import usePlay from "../play/store";
+import { serviceGameCreate, serviceGameGetResume } from "../../services/ServiceGame";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../routes";
+import Dropdown from "./components/Dropdown";
+import GroupButton, { useGuessTime, useNumberOfMemento } from "./components/Dropdown/GroupButton";
+import { CustomPopup } from "../../components/PopUp";
+import Popup from "./components/Popup";
+import usePopup from "./components/Popup/store";
 
 const GameHistoryTable = () => {
   const data = [
@@ -111,8 +115,11 @@ export default () => {
   const dropdown = useGameDropdown();
   const numberOfMemento = useNumberOfMemento();
   const guessTime = useGuessTime();
-  const loading = useLoading();
+  const loading = useLoading(); 
   const { account } = useAccount();
+  const [ resumeGame, setResumeGame ] = useState<IGame>(defaultGame);
+  const navigate = useNavigate();
+  const popup = usePopup();
 
   useEffect(() => {
     if(numberOfMemento.vals.length == 0) {
@@ -135,27 +142,58 @@ export default () => {
       }
     };
 
-    fetchCardCategories();
-  },[])
-
-  const onPlayClick = async () => {
-    if(dropdown.selectedCardCategories.length == 0) return
-    var dto : ICreateGameDto = {
-      accountId: account.id,
-      categoryIds: dropdown.selectedCardCategories.map(p => p.id),
-      hideDurationInSecond: parseInt(guessTime.selected),
-      nCard: parseInt(numberOfMemento.selected)
+    const fetchGameResume = async () => {
+      const token = await getIdToken();
+      const resumeGame : IGame = await (await serviceGameGetResume(token, account.id)).json();
+      if(!resumeGame.id) return;
+      setResumeGame(resumeGame);
     }
 
+    fetchCardCategories();
+    fetchGameResume();
+  },[])
+
+  useEffect(() => {
+    if(popup.selection === "") return;
+    if(popup.selection === "new") createGame();
+    else if(popup.selection === "resume") onResumeClick();
+  }, [popup.selection])
+
+  const onNewGameClick = async () => {
+    if(dropdown.selectedCardCategories.length == 0) return
+    
+
+    if(resumeGame.id) {
+      popup.setShow(true)
+      return
+    }
+
+    await createGame();
+  }
+
+  const createGame = async () => {
     try {
+      var dto : ICreateGameDto = {
+        accountId: account.id,
+        categoryIds: dropdown.selectedCardCategories.map(p => p.id),
+        hideDurationInSecond: parseInt(guessTime.selected),
+        nCard: parseInt(numberOfMemento.selected)
+      }
+
       loading.setLoading(true)
       const token = await getIdToken();
       const game : IGame = await (await serviceGameCreate(token, dto)).json();
+      navigate(ROUTES.PLAY.replace(":gameId", game.id));
     } catch (e) {
       console.error(e);
     } finally {
       loading.setLoading(false)
     }
+  }
+
+  const onResumeClick = () => {
+    if(!resumeGame.id) return
+    navigate(ROUTES.PLAY.replace(":gameId", resumeGame.id));
   }
 
   return (
@@ -184,16 +222,25 @@ export default () => {
         
         {/* Middle div */}
         <div className="flex justify-center h-[300px]">
-            <button
-              onClick={onPlayClick} 
-              disabled={dropdown.selectedCardCategories.length == 0} 
-              className="custom-button h-16 w-40 rounded-xl custom-text-2">Play</button>
+          {
+            resumeGame.id && (
+              <button
+              onClick={onResumeClick} 
+              className="custom-button-alert h-16 w-60 rounded-xl custom-text-2 me-4"
+              >Resume</button>)
+          }
+          <button
+          onClick={onNewGameClick} 
+          disabled={dropdown.selectedCardCategories.length == 0} 
+          className="custom-button h-16 w-60 rounded-xl custom-text-2"
+          >New Game</button>
         </div>
         <div>
           <GameHistoryTable/>
         </div>
         <div className="pt-8"></div>
       </div>
+      <CustomPopup isOpen={popup.show} children={<Popup/>}/>
     </div>
   );
 }

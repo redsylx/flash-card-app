@@ -61,7 +61,7 @@ const Card: React.FC<ICardProps> = ({ card }) => {
               <div className="flex justify-between items-end mt-auto">
                 <div className="text-text text-sm">{card.nFrequency}x</div>
                 {card.pctCorrect && (
-                  <div className="text-main text-sm">{card.pctCorrect}%</div>
+                  <div className="text-main text-sm">{Math.round(((card.pctCorrect ?? 0) * 100))}%</div>
                 )}
               </div>
             </div>
