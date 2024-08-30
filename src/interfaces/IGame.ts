@@ -7,7 +7,8 @@ interface IGame {
   status: GameStatus,
   nCard: number,
   pctCorrect?: number,
-  hideDurationInSecond: number
+  hideDurationInSecond: number,
+  listCategory: string[]
 }
 
 const defaultGame: IGame = {
@@ -16,7 +17,8 @@ const defaultGame: IGame = {
   lastUpdatedTime: new Date("2024-01-01"),
   status: "playing",
   nCard: 0,
-  hideDurationInSecond: 0
+  hideDurationInSecond: 0,
+  listCategory: []
 }
 
 interface ICreateGameDto {

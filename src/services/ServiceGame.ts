@@ -9,6 +9,12 @@ async function serviceGameGet (accessToken: string, accountId: string, gameId: s
     return await fetch(url, init);
 }
 
+async function serviceGameGetList (accessToken: string, accountId: string) {
+  let url = `${base_url}/list?ispaged=false&accountId=${encodeURIComponent(accountId)}`;
+  const init = requestInit(accessToken);
+  return await fetch(url, init);
+}
+
 async function serviceGameGetResume (accessToken: string, accountId: string) {
   let url = `${base_url}/resume?accountId=${encodeURIComponent(accountId)}`;
   const init = requestInit(accessToken);
@@ -32,5 +38,6 @@ export {
   serviceGameGet,
   serviceGameCreate,
   serviceGameFinish,
-  serviceGameGetResume
+  serviceGameGetResume,
+  serviceGameGetList
 }

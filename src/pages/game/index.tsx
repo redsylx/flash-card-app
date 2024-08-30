@@ -7,7 +7,7 @@ import ICardCategory from "../../interfaces/ICardCategory";
 import { useGameDropdown, useHomeDropdown } from "../home/components/Dropdown/store";
 import { defaultGame, ICreateGameDto, IGame } from "../../interfaces/IGame";
 import { useLoading } from "../../components/Loading";
-import { serviceGameCreate, serviceGameGetResume } from "../../services/ServiceGame";
+import { serviceGameCreate, serviceGameGetList, serviceGameGetResume } from "../../services/ServiceGame";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../routes";
 import Dropdown from "./components/Dropdown";
@@ -15,100 +15,9 @@ import GroupButton, { useGuessTime, useNumberOfMemento } from "./components/Drop
 import { CustomPopup } from "../../components/PopUp";
 import Popup from "./components/Popup";
 import usePopup from "./components/Popup/store";
-
-const GameHistoryTable = () => {
-  const data = [
-    {
-      dateTime: '10 Agustus 2024, 12:34',
-      category: 'category 1, category 2',
-      items: 20,
-      successRate: '88,88%',
-    },
-    {
-      dateTime: '10 Agustus 2024, 11:19',
-      category: 'category 3, category 4',
-      items: 25,
-      successRate: '28,88%',
-    },
-    {
-      dateTime: '10 Agustus 2024, 12:34',
-      category: 'category 1, category 2',
-      items: 20,
-      successRate: '88,88%',
-    },
-    {
-      dateTime: '10 Agustus 2024, 11:19',
-      category: 'category 3, category 4',
-      items: 25,
-      successRate: '28,88%',
-    },
-    {
-      dateTime: '10 Agustus 2024, 12:34',
-      category: 'category 1, category 2',
-      items: 20,
-      successRate: '88,88%',
-    },
-    {
-      dateTime: '10 Agustus 2024, 11:19',
-      category: 'category 3, category 4',
-      items: 25,
-      successRate: '28,88%',
-    },
-    {
-      dateTime: '10 Agustus 2024, 12:34',
-      category: 'category 1, category 2',
-      items: 20,
-      successRate: '88,88%',
-    },
-    {
-      dateTime: '10 Agustus 2024, 11:19',
-      category: 'category 3, category 4',
-      items: 25,
-      successRate: '28,88%',
-    },
-    {
-      dateTime: '10 Agustus 2024, 12:34',
-      category: 'category 1, category 2',
-      items: 20,
-      successRate: '88,88%',
-    },
-    {
-      dateTime: '10 Agustus 2024, 11:19',
-      category: 'category 3, category 4',
-      items: 25,
-      successRate: '28,88%',
-    },
-    // Tambahin data lainnya sesuai kebutuhan...
-  ];
-
-  return (
-    <div className="overflow-x-auto">
-      <p className="mb-8 custom-text-4 font-bold">Game History</p>
-      <table className="min-w-full bg-bg text-text">
-        <thead className="bg-sub text-left">
-          <tr>
-            <th className="custom-table-header">date time</th>
-            <th className="custom-table-header">category</th>
-            <th className="custom-table-header">items</th>
-            <th className="custom-table-header">success rate</th>
-            <th className="custom-table-header"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => (
-            <tr key={index} className="border-b border-sub">
-              <td className="custom-table-row">{item.dateTime}</td>
-              <td className="custom-table-row">{item.category}</td>
-              <td className="custom-table-row">{item.items}</td>
-              <td className="custom-table-row">{item.successRate}</td>
-              <td className="custom-table-row text-text underline cursor-pointer">view detail</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
+import GameHistoryTable from "./components/Table";
+import usePlay from "../play/store";
+import useTable from "./components/Table/store";
 
 export default () => {
   const homeDropdown = useHomeDropdown();
@@ -120,6 +29,7 @@ export default () => {
   const [ resumeGame, setResumeGame ] = useState<IGame>(defaultGame);
   const navigate = useNavigate();
   const popup = usePopup();
+  const table = useTable();
 
   useEffect(() => {
     if(numberOfMemento.vals.length == 0) {
@@ -148,9 +58,16 @@ export default () => {
       if(!resumeGame.id) return;
       setResumeGame(resumeGame);
     }
+    
+    const fetchGameHistories = async () => {
+      const token = await getIdToken();
+      const gameHistories : IGame[] = await (await serviceGameGetList(token, account.id)).json();
+      table.setGames(gameHistories.filter(p => p.status !== "playing"));
+    }
 
     fetchCardCategories();
     fetchGameResume();
+    fetchGameHistories();
   },[])
 
   useEffect(() => {
