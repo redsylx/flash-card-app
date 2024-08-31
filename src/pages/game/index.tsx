@@ -72,8 +72,16 @@ export default () => {
 
   useEffect(() => {
     if(popup.selection === "") return;
-    if(popup.selection === "new") createGame();
-    else if(popup.selection === "resume") onResumeClick();
+    if(popup.selection === "new") {
+      popup.setSelection("");
+      popup.setShow(false);
+      createGame();
+    }
+    else if(popup.selection === "resume") {
+      popup.setSelection("");
+      popup.setShow(false);
+      onResumeClick();
+    }
   }, [popup.selection])
 
   const onNewGameClick = async () => {

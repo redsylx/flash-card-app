@@ -151,10 +151,10 @@ export default () => {
           <div className='grid grid-cols-2 min-w-full'>
             <div className="flex felx-col items-center justify-center">
               <div className="max-w-[400px]">
-                { play.selectedGameDetail.card.clueImgUrl && (<img src={play.selectedGameDetail.card.clueImgUrl} className='rounded-xl object-cover max-w-[300px] mb-8'/>)}
-                <p className="custom-text-4-height text-text mb-4">{ play.selectedGameDetail.card.clueTxt }</p>
+                { play.selectedGameDetail.clueImgUrl && (<img src={play.selectedGameDetail.clueImgUrl} className='rounded-xl object-cover max-w-[300px] mb-8'/>)}
+                <p className="custom-text-4-height text-text mb-4">{ play.selectedGameDetail.clueTxt }</p>
                 <p className="custom-text-1 text-main">{play.selectedGameDetail.categoryName}</p>
-                <p className={`custom-text-1 text-text mt-8 ${showDescription ? '' : 'hidden'}`}>{play.selectedGameDetail.card.descriptionTxt}</p>
+                <p className={`custom-text-1 text-text mt-8 ${showDescription ? '' : 'hidden'}`}>{play.selectedGameDetail.descriptionTxt}</p>
               </div>
             </div>
             <div className="flex flex-col items-center justify-center relative">

@@ -1,4 +1,3 @@
-import ICard, { defaultCard } from "./ICard";
 import { defaultGame, IGame } from "./IGame";
 
 interface IGameDetail {
@@ -9,7 +8,10 @@ interface IGameDetail {
   isAnswered: boolean,
   indexNumber: number,
   game: IGame,
-  card: ICard,
+  clueTxt: string,
+  clueImg: string,
+  clueImgUrl: string,
+  descriptionTxt: string,
   categoryName: string,
 }
 
@@ -21,7 +23,10 @@ const defaultGameDetail : IGameDetail = {
   isAnswered: false,
   indexNumber: 0,
   game: defaultGame,
-  card: defaultCard,
+  clueTxt: "",
+  clueImg: "",
+  clueImgUrl: "",
+  descriptionTxt: "",
   categoryName: ""
 }
 

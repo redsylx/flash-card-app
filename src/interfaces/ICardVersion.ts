@@ -1,27 +1,27 @@
-import ICard, { defaultCard } from "./ICard";
+// import ICard, { defaultCard } from "./ICard";
 
-interface ICardVersion {
-  clueTxt: string,
-  clueImg: string,
-  clueImgUrl: string,
-  id: string,
-  descriptionTxt: string,
-  card: ICard
-}
+// interface ICardVersion {
+//   clueTxt: string,
+//   clueImg: string,
+//   clueImgUrl: string,
+//   id: string,
+//   descriptionTxt: string,
+//   card: ICard
+// }
 
-const defaultCardVersion : ICardVersion = {
-  clueTxt: "",
-  clueImg: "",
-  clueImgUrl: "",
-  id: "",
-  descriptionTxt: "",
-  card: defaultCard
-}
+// const defaultCardVersion : ICardVersion = {
+//   clueTxt: "",
+//   clueImg: "",
+//   clueImgUrl: "",
+//   id: "",
+//   descriptionTxt: "",
+//   card: defaultCard
+// }
 
-export {
-  defaultCardVersion
-}
+// export {
+//   defaultCardVersion
+// }
 
-export type {
-  ICardVersion
-}
+// export type {
+//   ICardVersion
+// }
