@@ -6,7 +6,6 @@ export default () => {
   const play = usePlay();
   const popup = usePopup();
   const table = useTable();
-
   return (
     <div className="overflow-x-auto">
       <p className="mb-8 custom-text-4 font-bold">Game History</p>
@@ -17,7 +16,6 @@ export default () => {
             <th className="custom-table-header">category</th>
             <th className="custom-table-header">items</th>
             <th className="custom-table-header">success rate</th>
-            <th className="custom-table-header"></th>
           </tr>
         </thead>
         <tbody>
@@ -27,7 +25,6 @@ export default () => {
               <td className="custom-table-row">{item.listCategory.join(", ")}</td>
               <td className="custom-table-row">{item.nCard}</td>
               <td className="custom-table-row">{(item.pctCorrect ?? 0) * 100}%</td>
-              <td className="custom-table-row text-text underline cursor-pointer">view detail</td>
             </tr>
           ))}
         </tbody>

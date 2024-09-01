@@ -27,7 +27,7 @@ export default () => {
     const fetchCardCategories = async () => {
       const token = await getIdToken();
       const categories : ICardCategory[] = await (await serviceCardCategoryGetList(token, account.id)).json();
-      const defaultCategory = categories.find(p => p.name === "default") || defaultCardCategory;
+      const defaultCategory = (categories.find(p => p.name === "default")) || (categories.length > 0 ? categories[0] : defaultCardCategory);
       dropdown.setCardCategories(categories);
       dropdown.setPrevSelectedCardCategory(dropdown.selectedCardCategory);
       dropdown.setSelectedCardCategory(
