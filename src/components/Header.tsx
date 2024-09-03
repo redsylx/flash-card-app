@@ -39,7 +39,9 @@ export default () => {
                 </div>
             </div>
             <div className="flex items-center">
-                <p className='custom-text-1 text-sub mr-4'>{account.username ? account.username : '. . .'}</p>
+            <p className='custom-text-1 text-sub font-bold mr-2'>{account.point}</p>
+            <p className='custom-text-1 text-sub mr-4'>points</p>
+            <p className='custom-text-1 text-sub mr-4'>{account.username ? account.username : '. . .'}</p>
                 <div onClick={logout}>
                     <IconContainer>
                         <Logout/>
