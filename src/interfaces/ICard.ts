@@ -9,7 +9,9 @@ export default interface ICard {
     pctCorrect?: number;
     id: string;
     descriptionTxt: string;
-    cardCategory: ICardCategory
+    categoryName: string;
+    cardCategory: ICardCategory;
+    createdTime: Date
   }
 
 const defaultCard : ICard = {
@@ -20,7 +22,9 @@ const defaultCard : ICard = {
   id: "0",
   nCorrect: 0,
   nFrequency: 0,
-  cardCategory: defaultCardCategory
+  categoryName: "",
+  cardCategory: defaultCardCategory,
+  createdTime: new Date(),
 }
 
 const emptyCard : ICard = {
@@ -31,7 +35,9 @@ const emptyCard : ICard = {
   id: "dummy",
   nCorrect: 0,
   nFrequency: 0,
-  cardCategory: defaultCardCategory
+  categoryName: "",
+  cardCategory: defaultCardCategory,
+  createdTime: new Date(),
 }
 
 export {

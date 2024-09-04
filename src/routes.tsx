@@ -5,6 +5,8 @@ import Login from './pages/Login'
 import Auth from './pages/Auth'
 import Game from "./pages/game";
 import Play from "./pages/play";
+import Store from "./pages/store";
+import Library from "./pages/library";
 
 export const ROUTES = {
     AUTH: '/auth',
@@ -12,6 +14,7 @@ export const ROUTES = {
     GAME: '/game',
     PLAY: '/play/:gameId',
     LIBRARY: '/library',
+    STORE: '/store',
     LOGIN: '/login',
     BASE: '/'
 };
@@ -40,6 +43,14 @@ const routeObject : RouteObject[] = [
   {
     path: ROUTES.PLAY,
     element: <Play/>
+  },
+  {
+    path: ROUTES.STORE,
+    element: <Store/>
+  },
+  {
+    path: ROUTES.LIBRARY,
+    element: <Library/>
   },
   
 ]

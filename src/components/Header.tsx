@@ -1,4 +1,4 @@
-import { Home, PlayArrow, LibraryBooks, Logout } from '@mui/icons-material';
+import { Home, PlayArrow, LibraryBooks, Logout, Store } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '../routes';
 import { IconContainer } from './IconContainer';
@@ -35,6 +35,11 @@ export default () => {
                 <div className='mr-4' onClick={() => navigateRoute(ROUTES.LIBRARY)}>
                     <IconContainer isActive={location.pathname == ROUTES.LIBRARY}>
                         <LibraryBooks/>
+                    </IconContainer>
+                </div>
+                <div className='mr-4' onClick={() => navigateRoute(ROUTES.STORE)}>
+                    <IconContainer isActive={location.pathname == ROUTES.STORE}>
+                        <Store/>
                     </IconContainer>
                 </div>
             </div>

@@ -9,6 +9,12 @@ async function serviceCardGetList (accessToken: string, categoryId: string, ...f
     return await fetch(url, init);
 }
 
+async function serviceCardGetListByAccount (accessToken: string, accountId: string, ...filters: string[]) {
+    let url = `${base_url}/list/account?accountId=${encodeURIComponent(accountId)}&${filters.join('&')}`;
+    const init = requestInit(accessToken);
+    return await fetch(url, init);
+}
+
 async function serviceCardCreate(accessToken: string, card: ICard) {
     const url = `${base_url}`;
     const init = requestInit(accessToken, 'POST');
@@ -31,6 +37,7 @@ async function serviceCardDelete(accessToken: string, cardId: string) {
 
 export {
     serviceCardGetList,
+    serviceCardGetListByAccount,
     serviceCardCreate,
     serviceCardUpdate,
     serviceCardDelete
