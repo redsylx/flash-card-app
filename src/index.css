@@ -42,6 +42,10 @@
   @apply rounded-lg bg-sub-alt placeholder-sub text-text focus:outline-none;
 }
 
+.custom-input-right {
+  @apply rounded-e-xl bg-sub-alt placeholder-sub text-text focus:outline-none;
+}
+
 .custom-button {
   @apply font-bold bg-sub-alt text-text hover:bg-sub hover:text-text disabled:bg-bg disabled:text-sub-alt disabled:border-2 disabled:border-sub-alt
 }
@@ -124,7 +128,7 @@
 }
 
 .custom-table-header {
-  @apply px-10 py-5 custom-text-2
+  @apply ps-10 pe-2 py-5 custom-text-2
 }
 
 .custom-table-row {

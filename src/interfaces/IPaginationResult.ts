@@ -3,7 +3,6 @@ interface IPaginationResultNoItems {
   pageNumber: number,
   maxPageNumber: number,
   pageSize: number,
-  isChange: boolean,
 }
 
 interface IPaginationResult<T> extends IPaginationResultNoItems {
@@ -13,9 +12,8 @@ interface IPaginationResult<T> extends IPaginationResultNoItems {
 const defaultPaginationResultNoItems : IPaginationResultNoItems = {
   maxPageNumber: 1,
   pageNumber: 1,
-  pageSize: 10,
+  pageSize: 5,
   totalCount: 0,
-  isChange: false,
 }
 
 export {

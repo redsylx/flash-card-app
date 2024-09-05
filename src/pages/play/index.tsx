@@ -149,8 +149,8 @@ export default () => {
         </div>
         { showGame && (
           <div className='grid grid-cols-2 min-w-full'>
-            <div className="flex felx-col items-center justify-center">
-              <div className="max-w-[400px]">
+            <div className="flex flex-col items-center justify-center">
+              <div className="w-[400px]">
                 { play.selectedGameDetail.clueImgUrl && (<img src={play.selectedGameDetail.clueImgUrl} className='rounded-xl object-cover max-w-[300px] mb-8'/>)}
                 <p className="custom-text-4-height text-text mb-4">{ play.selectedGameDetail.clueTxt }</p>
                 <p className="custom-text-1 text-main">{play.selectedGameDetail.categoryName}</p>
@@ -158,7 +158,7 @@ export default () => {
               </div>
             </div>
             <div className="flex flex-col items-center justify-center relative">
-              <div className="max-w-[400px] flex flex-col items-center">
+              <div className="w-[400px] flex flex-col items-center">
                 {!showDescription ? (
                   <>
                     <p className="text-6xl text-text mb-4">{countdown}</p>
