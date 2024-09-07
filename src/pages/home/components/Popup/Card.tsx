@@ -8,16 +8,16 @@ import { IGetUploadProp, serviceUpload, serviceUploadGetUploadImageUrl } from ".
 import { serviceCardCreate, serviceCardDelete, serviceCardUpdate } from "../../../../services/ServiceCard";
 import { IconContainer } from "../../../../components/IconContainer";
 import { Close } from "@mui/icons-material";
-import ImageUploader from "../ImageUploader";
-import useImageUploader from "../ImageUploader/store";
 import { useHomeDropdown } from "../Dropdown/store";
+import { useImageUploaderHome } from "../../../../store";
+import { ImageUploader } from "../../../../components/ImageUploader";
 
 export default () => {
   const card = useCard();
   const popup = usePopup();
   const loading = useLoading();
   const dropdown = useHomeDropdown();
-  const image = useImageUploader();
+  const image = useImageUploaderHome();
 
   useEffect(() => image.setPreviewUrl(popup.selectedCard.clueImgUrl), [])
 
@@ -123,7 +123,7 @@ export default () => {
               onChange={handleTextAreaChange}
               name="descriptionTxt"
               />
-              <ImageUploader/>
+              <ImageUploader image={image}/>
           </div>
           {
             checkType("update") 

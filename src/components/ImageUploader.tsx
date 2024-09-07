@@ -1,8 +1,11 @@
 import { ChangeEvent, useRef } from "react";
-import useImageUploader from "./store";
+import { IImageUploaderState } from "../store";
 
-export default () => {
-  const image = useImageUploader();
+interface IImageUploaderProps {
+  image: IImageUploaderState
+}
+
+const ImageUploader : React.FC<IImageUploaderProps> =  ({image}) => {
   const inputFileRef = useRef<HTMLInputElement | null>(null);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -71,3 +74,7 @@ export default () => {
     </div>
   );
 };
+
+export {
+  ImageUploader
+}
