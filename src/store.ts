@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import IAccount, { defaultAccount } from './interfaces/IAccount';
 import ICardCategory, { defaultCardCategory } from './interfaces/ICardCategory';
+import { defaultPaginationResultNoItems, IPaginationResultNoItems } from './interfaces/IPaginationResult';
+import ICard, { defaultCard } from './interfaces/ICard';
+import { defaultSellCardCategory, ISellCardCategory } from './interfaces/ISellCardCategory';
 
 type AccountState = {
   account: IAccount;
@@ -60,12 +63,62 @@ const createCardCategoryDropdownState = () => create<IDropdownState<ICardCategor
 
 const useCardCategoryDropdownStateStore = createCardCategoryDropdownState();
 
+interface ITableState<T> {
+  items: T[];
+  selectedItem: T;
+  paginationResult: IPaginationResultNoItems;
+  order: string;
+  isDescending: boolean;
+  refresh: boolean;
+  setItems: (data: T[]) => void;
+  setSelectedItem: (data: T) => void;
+  setPaginationResult: (data: IPaginationResultNoItems) => void;
+  setOrder: (data: string) => void;
+  setIsDescending: (data: boolean) => void;
+  setRefresh: (data: boolean) => void;
+}
+
+const createCardTableState = () => create<ITableState<ICard>>((set) => ({
+  items: [],
+  selectedItem: defaultCard,
+  paginationResult: defaultPaginationResultNoItems,
+  order: "",
+  isDescending: false,
+  refresh: false,
+  setItems: (data: ICard[]) => set({ items: data}),
+  setSelectedItem: (data: ICard) => set({selectedItem: data}),
+  setPaginationResult: (data: IPaginationResultNoItems) => set({ paginationResult: data}),
+  setOrder: (data: string) => set({ order: data }),
+  setIsDescending: (data: boolean) => set({ isDescending: data }),
+  setRefresh: (data: boolean) => set({ refresh: data})
+}));
+
+const createSellCardCategoryTableState = () => create<ITableState<ISellCardCategory>>((set) => ({
+  items: [],
+  selectedItem: defaultSellCardCategory,
+  paginationResult: defaultPaginationResultNoItems,
+  order: "",
+  isDescending: false,
+  refresh: false,
+  setItems: (items) => set({ items }),
+  setSelectedItem: (selectedItem) => set({selectedItem}),
+  setPaginationResult: (paginationResult) => set({ paginationResult }),
+  setOrder: (order) => set({ order }),
+  setIsDescending: (isDescending) => set({ isDescending }),
+  setRefresh: (refresh) => set({ refresh })
+}));
+
+const useCardTableStateLibrary = createCardTableState();
+const useSellCardCategoryTableStateStore = createSellCardCategoryTableState();
+
 export { 
   useAccount, 
   useCardCategory,
   useImageUploaderHome, 
   useImageUploaderStore, 
-  useCardCategoryDropdownStateStore
+  useCardCategoryDropdownStateStore,
+  useCardTableStateLibrary,
+  useSellCardCategoryTableStateStore
 };
 
 export type {

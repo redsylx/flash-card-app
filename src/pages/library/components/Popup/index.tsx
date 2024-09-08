@@ -1,8 +1,8 @@
+import { useCardTableStateLibrary } from "../../../../store";
 import { usePopup } from "./store";
-import useTable from "../Table/store";
 
 export default () => {
-  const table = useTable();
+  const table = useCardTableStateLibrary();
   const card = table.selectedItem;
   const popup = usePopup();
 

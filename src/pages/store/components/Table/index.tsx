@@ -1,11 +1,9 @@
 import { ArrowDownward, ArrowLeft, ArrowRight, ArrowUpward, Visibility } from "@mui/icons-material";
 import { IconContainer } from "../../../../components/IconContainer";
-import { usePopup } from "../Popup/store";
-import { useCardTableStateLibrary } from "../../../../store";
+import { useSellCardCategoryTableStateStore } from "../../../../store";
 
 export default () => {
-  const table = useCardTableStateLibrary();
-  const popup = usePopup();
+  const table = useSellCardCategoryTableStateStore();
 
   const onNextClick = () => {
     if (table.paginationResult.pageNumber === table.paginationResult.maxPageNumber) return;
@@ -55,7 +53,7 @@ export default () => {
       <table className="min-w-full bg-bg text-text">
         <thead className="bg-sub text-left">
           <tr>
-            {["clue", "category", "freq", "success rate", "created date"].map((header) => (
+            {["name", "desc", "sold", "point", "created date"].map((header) => (
               <th
                 key={header}
                 className={getHeaderClassName(header)}
@@ -72,18 +70,11 @@ export default () => {
           {table.items.length > 0 &&
             table.items.map((item, index) => (
               <tr key={index} className="border-b border-sub">
-                <td className="custom-table-row">{item.clueTxt}</td>
-                <td className="custom-table-row">{item.categoryName}</td>
-                <td className="custom-table-row">{item.nFrequency}x</td>
-                <td className="custom-table-row">{(item.pctCorrect ?? 0) * 100}%</td>
+                <td className="custom-table-row">{item.name}</td>
+                <td className="custom-table-row">{item.description}</td>
+                <td className="custom-table-row">{item.sold}x</td>
+                <td className="custom-table-row">{item.point}</td>
                 <td className="custom-table-row">{new Date(item.createdTime).toLocaleString()}</td>
-                <td className="custom-table-row">
-                  <div className="flex" onClick={() => { table.setSelectedItem(item);  popup.setIsOpen(true)}}>
-                    <IconContainer>
-                      <Visibility />
-                    </IconContainer>
-                  </div>
-                </td>
               </tr>
             ))}
         </tbody>

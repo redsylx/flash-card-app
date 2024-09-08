@@ -10,6 +10,13 @@ async function serviceSellCardCategoryCreate (accessToken: string, accountId: st
     return await fetch(url, init);
 }
 
+async function serviceSellCardCategoryGetList (accessToken: string, accountId: string, ...filters: string[]) {
+    let url = `${base_url}/list/account?accountId=${encodeURIComponent(accountId)}&${filters.join('&')}`;
+    const init = requestInit(accessToken);
+    return await fetch(url, init);
+}
+
 export {
     serviceSellCardCategoryCreate,
+    serviceSellCardCategoryGetList
 }

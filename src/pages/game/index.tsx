@@ -16,7 +16,6 @@ import { CustomPopup } from "../../components/PopUp";
 import Popup from "./components/Popup";
 import usePopup from "./components/Popup/store";
 import GameHistoryTable from "./components/Table";
-import usePlay from "../play/store";
 import useTable from "./components/Table/store";
 
 export default () => {

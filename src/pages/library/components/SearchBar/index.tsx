@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import List from "./List";
 import { useSearchBar } from "./store";
-import useTable from "../Table/store";
+import { useCardTableStateLibrary } from "../../../../store";
 
 export default () => {
   const searchBar = useSearchBar();
-  const table = useTable();
+  const table = useCardTableStateLibrary();
   const [inputValue, setInputValue] = useState("");
   const [debouncedValue, setDebouncedValue] = useState("");
 

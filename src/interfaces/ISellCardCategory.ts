@@ -5,7 +5,8 @@ interface ISellCardCategory {
   img: string,
   point: number,
   sold: number,
-  description: string
+  description: string,
+  createdTime: Date
 }
 
 const defaultSellCardCategory : ISellCardCategory = {
@@ -15,7 +16,8 @@ const defaultSellCardCategory : ISellCardCategory = {
   img: "",
   point: 0,
   sold: 0,
-  description: ""
+  description: "",
+  createdTime: new Date()
 }
 
 export {

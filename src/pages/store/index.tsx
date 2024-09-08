@@ -3,10 +3,15 @@ import Header from "../../components/Header";
 import { CustomPopup } from "../../components/PopUp";
 import Popup from "./components/Popup";
 import { usePopupSellCardCategory } from "./components/Popup/store";
-import { useAccount, useCardCategory, useCardCategoryDropdownStateStore } from "../../store";
+import { useAccount, useCardCategory, useCardCategoryDropdownStateStore, useSellCardCategoryTableStateStore } from "../../store";
 import { getIdToken } from "../../firebase";
 import ICardCategory from "../../interfaces/ICardCategory";
 import { serviceCardCategoryGetList } from "../../services/ServiceCardCategory";
+import Table from "./components/Table";
+import { ISellCardCategory } from "../../interfaces/ISellCardCategory";
+import { serviceSellCardCategoryGetList } from "../../services/ServiceSellCardCategory";
+import { IPaginationResult } from "../../interfaces/IPaginationResult";
+import { asyncProcess } from "../../utils/loading";
 
 export default () => {
   const {account} = useAccount();
@@ -14,20 +19,54 @@ export default () => {
   const [ active, setActive ] = useState("sell");
   const cardCategory = useCardCategory();
   const dropdown = useCardCategoryDropdownStateStore();
+  const table = useSellCardCategoryTableStateStore();
+  const [ firstFetch, setFirstFetch ] = useState(true);
+
+  const getSortField = (header: string) => {
+    let sortField = "createdTime";
+    switch(header) {
+      case "desc": sortField = "description"; break;
+      case "point": sortField = "point"; break;
+      case "sold": sortField = "sold"; break;
+      case "created date": sortField = "createdTime"; break;
+    }
+    return sortField;
+  }
+
+  const getSort = (isDescending: boolean) => {
+    return isDescending ? "desc" : "asc";
+  }
+
+  const fetchCardCategories = async () => {
+    const token = await getIdToken();
+    const categories : ICardCategory[] = await (await serviceCardCategoryGetList(token, account.id)).json();
+    cardCategory.setItems(categories);
+  };
+
+  const fetchSellCardCategories = async () => {
+    if(firstFetch) {
+      table.isDescending = true;
+      table.order = "createdTime";
+      setFirstFetch(false);
+    }
+
+    const token = await getIdToken();
+    const sellCardCategories : IPaginationResult<ISellCardCategory> = await (await serviceSellCardCategoryGetList(token, account.id, `SortField=${getSortField(table.order)}`, `SortOrder=${getSort(table.isDescending)}`, `pagesize=${table.paginationResult.pageSize}`, `pageNumber=${table.paginationResult.pageNumber}`)).json();
+    table.setItems(sellCardCategories.items)
+    table.setPaginationResult(sellCardCategories)
+  }
 
   useEffect(() => {
-    const fetchCardCategories = async () => {
-      const token = await getIdToken();
-      const categories : ICardCategory[] = await (await serviceCardCategoryGetList(token, account.id)).json();
-      cardCategory.setItems(categories);
-    };
-
     if(cardCategory.items.length == 0) {
-      fetchCardCategories()
+      asyncProcess(fetchCardCategories);
     } else {
       dropdown.setItems(cardCategory.items)
     }
   }, [cardCategory.items])
+
+  useEffect(() => {
+    asyncProcess(fetchSellCardCategories)
+  }, [table.refresh])
 
   const openPopup = () => {
     popup.setIsOpen(true)
@@ -48,7 +87,7 @@ export default () => {
         </div>
         <hr className="border-t-2 border-sub" />
         <div className="pt-4">
-          {/* <Table/> */}
+          <Table/>
         </div>
       </div>
       <CustomPopup isOpen={popup.isOpen} children={<Popup/>}/>

@@ -3,9 +3,7 @@ import Header from "../../components/Header";
 import { useLoading } from "../../components/Loading";
 import { getIdToken } from "../../firebase";
 import { serviceCardGetListByAccount } from "../../services/ServiceCard";
-import { useAccount } from "../../store";
-import Table from "./components/Table";
-import useTable from "./components/Table/store";
+import { useAccount, useCardTableStateLibrary } from "../../store";
 import { IPaginationResult } from "../../interfaces/IPaginationResult";
 import ICard from "../../interfaces/ICard";
 import { CustomPopup } from "../../components/PopUp";
@@ -13,10 +11,11 @@ import { usePopup } from "./components/Popup/store";
 import Popup from "./components/Popup";
 import SearchBar from "./components/SearchBar";
 import { useSearchBar } from "./components/SearchBar/store";
+import Table from "./components/Table";
 
 export default () => {
   const { account } = useAccount();
-  const table = useTable();
+  const table = useCardTableStateLibrary();
   const loading = useLoading();
   const popup = usePopup();
   const searchBar = useSearchBar();

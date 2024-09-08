@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect } from "react";
 import { useLoading } from "../../../../components/Loading";
 import { Close } from "@mui/icons-material";
-import { useAccount, useCardCategoryDropdownStateStore, useImageUploaderStore } from "../../../../store";
+import { useAccount, useCardCategoryDropdownStateStore, useImageUploaderStore, useSellCardCategoryTableStateStore } from "../../../../store";
 import { usePopupSellCardCategory } from "./store";
 import { IconContainer } from "../../../../components/IconContainer";
 import { ImageUploader } from "../../../../components/ImageUploader";
@@ -18,6 +18,7 @@ export default () => {
   const image = useImageUploaderStore();
   const popup = usePopupSellCardCategory();
   const dropdown = useCardCategoryDropdownStateStore();
+  const table = useSellCardCategoryTableStateStore();
   const { account } = useAccount();
 
   useEffect(() => {
@@ -50,6 +51,7 @@ export default () => {
         popup.formItem.img = uploadRes.fileName;
       }
       await serviceSellCardCategoryCreate(token, account.id, dropdown.item.id, popup.formItem);
+      table.setRefresh(!table.refresh);
     })
     loading.setLoading(false)
     popup.setIsOpen(false)
