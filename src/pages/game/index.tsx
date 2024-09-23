@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Header from "../../components/Header"
 import { serviceCardCategoryGetList } from "../../services/ServiceCardCategory";
-import { useAccount } from "../../store";
+import { useAccount, useAlert } from "../../store";
 import { getIdToken } from "../../firebase";
 import ICardCategory from "../../interfaces/ICardCategory";
 import { useGameDropdown, useHomeDropdown } from "../home/components/Dropdown/store";
@@ -17,6 +17,7 @@ import Popup from "./components/Popup";
 import usePopup from "./components/Popup/store";
 import GameHistoryTable from "./components/Table";
 import useTable from "./components/Table/store";
+import { asyncProcess } from "../../utils/loading";
 
 export default () => {
   const homeDropdown = useHomeDropdown();
@@ -29,6 +30,7 @@ export default () => {
   const navigate = useNavigate();
   const popup = usePopup();
   const table = useTable();
+  const alert = useAlert();
 
   useEffect(() => {
     if(numberOfMemento.vals.length == 0) {
@@ -64,9 +66,13 @@ export default () => {
       table.setGames(gameHistories.filter(p => p.status !== "playing"));
     }
 
-    fetchCardCategories();
-    fetchGameResume();
-    fetchGameHistories();
+    const fetchAll = async () => {
+      await fetchCardCategories();
+      await fetchGameResume();
+      await fetchGameHistories();
+    }
+
+    asyncProcess(fetchAll, alert, loading);
   },[])
 
   useEffect(() => {
@@ -74,7 +80,7 @@ export default () => {
     if(popup.selection === "new") {
       popup.setSelection("");
       popup.setShow(false);
-      createGame();
+      asyncProcess(createGame, alert, loading);
     }
     else if(popup.selection === "resume") {
       popup.setSelection("");
@@ -92,27 +98,21 @@ export default () => {
       return
     }
 
-    await createGame();
+    asyncProcess(createGame, alert, loading);
   }
 
   const createGame = async () => {
-    try {
-      var dto : ICreateGameDto = {
-        accountId: account.id,
-        categoryIds: dropdown.selectedCardCategories.map(p => p.id),
-        hideDurationInSecond: parseInt(guessTime.selected),
-        nCard: parseInt(numberOfMemento.selected)
-      }
-
-      loading.setLoading(true)
-      const token = await getIdToken();
-      const game : IGame = await (await serviceGameCreate(token, dto)).json();
-      navigate(ROUTES.PLAY.replace(":gameId", game.id));
-    } catch (e) {
-      console.error(e);
-    } finally {
-      loading.setLoading(false)
+    var dto : ICreateGameDto = {
+      accountId: account.id,
+      categoryIds: dropdown.selectedCardCategories.map(p => p.id),
+      hideDurationInSecond: parseInt(guessTime.selected),
+      nCard: parseInt(numberOfMemento.selected)
     }
+
+    loading.setLoading(true)
+    const token = await getIdToken();
+    const game : IGame = await (await serviceGameCreate(token, dto)).json();
+    navigate(ROUTES.PLAY.replace(":gameId", game.id));
   }
 
   const onResumeClick = () => {

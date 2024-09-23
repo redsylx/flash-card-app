@@ -5,6 +5,7 @@ import Loading, { useLoading } from "./components/Loading";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routes";
 import { useFetchUser } from "./hooks";
+import Alert from "./components/Alert";
 
 const App = () => {
   const [isAuthReady, setIsAuthReady] = useState(false);
@@ -31,6 +32,7 @@ const App = () => {
     <div>
       <RouterProvider router={router}/>
       <Loading/>
+      <Alert/>
     </div>
   );
 };

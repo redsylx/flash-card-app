@@ -6,41 +6,37 @@ import { useLoading } from "../../../../components/Loading";
 import { asyncProcess } from "../../../../utils/loading";
 import { getIdToken } from "../../../../firebase";
 import { serviceCardCategoryDelete, serviceCardCategoryUpdate } from "../../../../services/ServiceCardCategory";
-import { useAccount } from "../../../../store";
+import { useAccount, useAlert } from "../../../../store";
 import { useHomeDropdown } from "../Dropdown/store";
 
 export default () => {
   const popup = usePopup();
   const dropdown = useHomeDropdown();
   const { account } = useAccount();
-  const { setLoading } = useLoading();
   const [val, setVal] = useState(popup.selectedCardCategory.name);
+  const alert = useAlert();
+  const loading = useLoading();
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
       setVal(event.target.value);
   }
 
   const updateCategoryName = async () => {
-    setLoading(true)
-    await asyncProcess(async () => {
-        const token = await getIdToken();
-        await serviceCardCategoryUpdate(token, account.id, popup.selectedCardCategory.id, val);
-    })
+    const token = await getIdToken();
+    await serviceCardCategoryUpdate(token, account.id, popup.selectedCardCategory.id, val);
     dropdown.setRefresh(!dropdown.refresh);
     popup.setIsCardCategoryOpen(false);
-    setLoading(false)
   }
 
   const deleteCategory = async () => {
-    setLoading(true)
-      await asyncProcess(async () => {
-          const token = await getIdToken();
-          await serviceCardCategoryDelete(token, account.id, popup.selectedCardCategory.id);
-      })
+    const token = await getIdToken();
+    await serviceCardCategoryDelete(token, account.id, popup.selectedCardCategory.id);
     dropdown.setRefresh(!dropdown.refresh);
     popup.setIsCardCategoryOpen(false);
-    setLoading(false)
   }
+
+  const onUpdateCategoryName = () => asyncProcess(updateCategoryName, alert, loading);
+  const onDeleteCategory = () => asyncProcess(deleteCategory, alert, loading);
 
   return(
       <div className="flex flex-col justify-between h-80">
@@ -62,8 +58,8 @@ export default () => {
               />
           </div>
           <div className="grid grid-cols-2 gap-4">
-              <button onClick={deleteCategory} className="font-bold bg-bg border-2 border-sub-alt text-sub hover:bg-error-1 hover:border-error-1 hover:text-bg py-2 rounded-lg">Delete</button>
-              <button onClick={updateCategoryName} className="custom-button py-2 rounded-lg">Update</button>
+              <button onClick={onDeleteCategory} className="font-bold bg-bg border-2 border-sub-alt text-sub hover:bg-error-1 hover:border-error-1 hover:text-bg py-2 rounded-lg">Delete</button>
+              <button onClick={onUpdateCategoryName} className="custom-button py-2 rounded-lg">Update</button>
           </div>
       </div>
   )

@@ -6,6 +6,14 @@
   width: 0px;
 }
 
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
 :root {
   font-family: 'Poppins', sans-serif;
   line-height: 1.5;

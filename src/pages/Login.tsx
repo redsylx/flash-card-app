@@ -6,6 +6,8 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, browserSess
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes";
+import { useLoading } from "../components/Loading";
+import { useAlert } from "../store";
 
 
 interface LoginPageProps {
@@ -33,12 +35,19 @@ const RegisterForm : React.FC<LoginPageProps> = ({setFormType}) => {
         })
     }
 
+    const loading = useLoading();
+    const alert = useAlert();
+
     const register = () => {
+        loading.setLoading(true)
         createUserWithEmailAndPassword(auth, loginForm.email, loginForm.password)
         .then(() => navigate(ROUTES.AUTH))
-        .catch((error) => {
-          console.error(error);
+        .catch((error: any) => {
+            alert.setTitle("Error")
+            alert.setMessage(error.message)
+            alert.setShow(true)
         });
+        loading.setLoading(false)
     }   
 
     return(
@@ -65,27 +74,15 @@ const RegisterForm : React.FC<LoginPageProps> = ({setFormType}) => {
                 name="repassword"
                 value={loginForm.repassword}
                 onChange={handleInputChange}
-                className="custom-input mb-2 p-2"
+                className="custom-input mb-4 p-2"
             />
-
-            <small className="text-left mb-4">
-                <a className="text-sub hover:text-text underline"><i>Lupa Password</i></a>
-            </small>
             
             <button
                 className="custom-button py-2 rounded-xl"
                 onClick={register}
             >
-                Log in
+                Register
             </button>
-
-            <hr className="mt-6 mb-2 border-sub-alt"/>
-
-            <div className="flex">
-                <IconContainer>
-                    <Google/>
-                </IconContainer>
-            </div>
 
             <small className="mt-4 text-center text-sub">
                 Sudah punya akun? <a onClick={() => setFormType(LoginFormType.signin)} className="text-sub underline hover:text-text"><i>login</i></a>
@@ -103,18 +100,26 @@ const LoginForm : React.FC<LoginPageProps> = ({ setFormType }) => {
             [event.target.name]: event.target.value
         })
     }
+    const loading = useLoading();
+    const alert = useAlert();
     
     const login = () => {
+        loading.setLoading(true)
         setPersistence(auth, browserSessionPersistence)
-        .then(() => {
-            return signInWithEmailAndPassword(auth, loginForm.email, loginForm.password).then(() => navigate(ROUTES.AUTH))
-            .catch((error) => {
-            console.error(error);
-            });;
+        .then(async () => {
+            try {
+                await signInWithEmailAndPassword(auth, loginForm.email, loginForm.password);
+                return navigate(ROUTES.AUTH);
+            } catch (error: any) {
+                alert.setTitle("Error");
+                alert.setMessage(error.message);
+                alert.setShow(true);
+            };
         })
         .catch((error) => {
             console.error("Persistence error:", error);
         });
+        loading.setLoading(false)
     }
 
     return (
@@ -146,14 +151,6 @@ const LoginForm : React.FC<LoginPageProps> = ({ setFormType }) => {
             >
                 Log in
             </button>
-
-            <hr className="mt-6 mb-2 border-sub-alt"/>
-
-            <div className="flex">
-                <IconContainer>
-                    <Google/>
-                </IconContainer>
-            </div>
 
             <small className="mt-4 text-center text-sub">
                 Belum punya akun? <a onClick={() => setFormType(LoginFormType.signup)} className="text-sub underline hover:text-text"><i>daftar</i></a>

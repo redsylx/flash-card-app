@@ -1,4 +1,4 @@
-import { requestInit, serviceDomain } from "./ServiceBase";
+import { customFetch, requestInit, serviceDomain } from "./ServiceBase";
 
 const base_url = `${serviceDomain}upload`
 
@@ -11,7 +11,7 @@ interface IGetUploadProp {
 async function serviceUploadGetUploadImageUrl (accessToken: string, fileName: string) {
     const url = `${base_url}/image?fileName=${encodeURIComponent(fileName)}`;
     const init = requestInit(accessToken);
-    return await fetch(url, init);
+    return await customFetch(url, init);
 }
 
 async function serviceUpload(file: File, uploadProp: IGetUploadProp) {
@@ -24,7 +24,7 @@ async function serviceUpload(file: File, uploadProp: IGetUploadProp) {
         },
         body: file,
     };
-    return await fetch(uploadUrl, init);
+    return await customFetch(uploadUrl, init);
 }
 
 export {

@@ -3,7 +3,7 @@ import Header from "../../components/Header";
 import { CustomPopup } from "../../components/PopUp";
 import Popup from "./components/Popup";
 import { usePopupSellCardCategory } from "./components/Popup/store";
-import { useAccount, useCardCategory, useCardCategoryDropdownStateStore, useSellCardCategoryTableStateStore } from "../../store";
+import { useAccount, useAlert, useCardCategory, useCardCategoryDropdownStateStore, useSellCardCategoryTableStateStore } from "../../store";
 import { getIdToken } from "../../firebase";
 import ICardCategory from "../../interfaces/ICardCategory";
 import { serviceCardCategoryGetList } from "../../services/ServiceCardCategory";
@@ -12,6 +12,7 @@ import { ISellCardCategory } from "../../interfaces/ISellCardCategory";
 import { serviceSellCardCategoryGetList } from "../../services/ServiceSellCardCategory";
 import { IPaginationResult } from "../../interfaces/IPaginationResult";
 import { asyncProcess } from "../../utils/loading";
+import { useLoading } from "../../components/Loading";
 
 export default () => {
   const {account} = useAccount();
@@ -21,6 +22,8 @@ export default () => {
   const dropdown = useCardCategoryDropdownStateStore();
   const table = useSellCardCategoryTableStateStore();
   const [ firstFetch, setFirstFetch ] = useState(true);
+  const alert = useAlert();
+  const loading = useLoading();
 
   const getSortField = (header: string) => {
     let sortField = "createdTime";
@@ -58,14 +61,14 @@ export default () => {
 
   useEffect(() => {
     if(cardCategory.items.length == 0) {
-      asyncProcess(fetchCardCategories);
+      asyncProcess(fetchCardCategories, alert, loading);
     } else {
       dropdown.setItems(cardCategory.items)
     }
   }, [cardCategory.items])
 
   useEffect(() => {
-    asyncProcess(fetchSellCardCategories)
+    asyncProcess(fetchSellCardCategories, alert, loading)
   }, [table.refresh])
 
   const openPopup = () => {

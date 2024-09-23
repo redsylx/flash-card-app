@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import Dropdown from "./components/Dropdown";
 import { getIdToken } from "../../firebase";
-import { useAccount } from "../../store";
+import { useAccount, useAlert } from "../../store";
 import useCard from "./components/Card/store";
 import ICardCategory, { defaultCardCategory } from "../../interfaces/ICardCategory";
 import { serviceCardCategoryGetList } from "../../services/ServiceCardCategory";
@@ -14,6 +14,8 @@ import CardCategory from "./components/Popup/CardCategory";
 import CardPopup from "./components/Popup/Card";
 import Card from "./components/Card";
 import { useHomeDropdown } from "./components/Dropdown/store";
+import { useLoading } from "../../components/Loading";
+import { asyncProcess } from "../../utils/loading";
 
 export default () => {
   const [ firstRender, setFirstRender ] = useState(true);
@@ -22,6 +24,8 @@ export default () => {
   const dropdown = useHomeDropdown();
   const card = useCard();
   const popup = usePopup();
+  const loading = useLoading();
+  const alert = useAlert();
 
   useEffect(() => {
     const fetchCardCategories = async () => {
@@ -39,7 +43,7 @@ export default () => {
     };
 
     if(firstRender && dropdown.cardCategories.length != 0) setFirstRender(false)
-    else fetchCardCategories();
+    else asyncProcess(fetchCardCategories, alert, loading);
   }, [dropdown.refresh]);
 
   useEffect(() => {
@@ -52,7 +56,7 @@ export default () => {
     };
 
     if(firstRender2 && dropdown.cardCategories.length != 0) setFirstRender2(false)
-    else fetchCards(dropdown.selectedCardCategory.id);
+    else asyncProcess(() => fetchCards(dropdown.selectedCardCategory.id), alert, loading);
   }, [dropdown.selectedCardCategory, card.refresh, dropdown.refresh]);
 
   useEffect(() => {

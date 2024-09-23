@@ -3,14 +3,18 @@ import usePopup from "../Popup/store";
 import ICardCategory from "../../../../interfaces/ICardCategory";
 import { getIdToken } from "../../../../firebase";
 import { serviceCardCategoryCreate } from "../../../../services/ServiceCardCategory";
-import { useAccount } from "../../../../store";
+import { useAccount, useAlert } from "../../../../store";
 import { DropdownState } from "./store";
+import { asyncProcess } from "../../../../utils/loading";
+import { useLoading } from "../../../../components/Loading";
 
 interface IProps {
     dropdown: DropdownState;
 }
 
 const List : React.FC<IProps> = ({ dropdown }) => {
+  const alert = useAlert();
+  const loading = useLoading();
   const account = useAccount();
   const popup = usePopup();
   const lastOptions = dropdown.cardCategoriesToShow[Math.max(0, dropdown.cardCategoriesToShow.length-1)];
@@ -22,8 +26,12 @@ const List : React.FC<IProps> = ({ dropdown }) => {
 
   const createCardCategory = async () => {
     const token = await getIdToken();
-    await (await serviceCardCategoryCreate(token, account.account.id, dropdown.searchTerm)).json();
+    await serviceCardCategoryCreate(token, account.account.id, dropdown.searchTerm);
     dropdown.setRefresh(!dropdown.refresh);
+  }
+  
+  const onCreateCardCategory = () => {
+    asyncProcess(createCardCategory, alert, loading);
   }
 
   return (
@@ -50,7 +58,7 @@ const List : React.FC<IProps> = ({ dropdown }) => {
       : 
           <div
           key="create"
-          onClick={createCardCategory}
+          onClick={onCreateCardCategory}
           className="bg-bg px-4 py-4 custom-text-1 text-text hover:bg-sub-alt cursor-pointer rounded-b-xl"
           >
           <p>

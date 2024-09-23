@@ -7,12 +7,16 @@ import { defaultSellCardCategory, ISellCardCategory } from './interfaces/ISellCa
 
 type AccountState = {
   account: IAccount;
-  setAccount: (newAccount: IAccount) => void;
+  refresh: boolean;
+  setAccount: (data: IAccount) => void;
+  setRefresh: (data: boolean) => void;
 }
 
 const useAccount = create<AccountState>((set) => ({
   account: defaultAccount,
+  refresh: false,
   setAccount: (newAccount) => set(() => ({ account: newAccount })),
+  setRefresh: (refresh) => set(() => ({ refresh }))
 }));
 
 interface ICardCategoryState {
@@ -108,6 +112,24 @@ const createSellCardCategoryTableState = () => create<ITableState<ISellCardCateg
   setRefresh: (refresh) => set({ refresh })
 }));
 
+interface IAlert {
+  show: boolean,
+  message: string,
+  title: string,
+  setShow: (data: boolean) => void,
+  setMessage: (data: string) => void,
+  setTitle: (data: string) => void,
+}
+
+const useAlert = create<IAlert>((set) => ({
+  show: false,
+  message: "",
+  title: "",
+  setShow: (show) => set({ show }),
+  setMessage: (message) => set({ message }),
+  setTitle: (title) => set({ title }),
+}))
+
 const useCardTableStateLibrary = createCardTableState();
 const useSellCardCategoryTableStateStore = createSellCardCategoryTableState();
 
@@ -118,10 +140,12 @@ export {
   useImageUploaderStore, 
   useCardCategoryDropdownStateStore,
   useCardTableStateLibrary,
-  useSellCardCategoryTableStateStore
+  useSellCardCategoryTableStateStore,
+  useAlert
 };
 
 export type {
   IImageUploaderState,
-  IDropdownState
+  IDropdownState,
+  IAlert,
 }

@@ -23,6 +23,10 @@ type LoadingState = {
   setLoading: (bool: boolean) => void;
 }
 
+export type {
+  LoadingState
+}
+
 const useLoading = create<LoadingState>((set) => ({
   isLoading: false,
   setLoading: (bool) => set(() => ({ isLoading: bool })),

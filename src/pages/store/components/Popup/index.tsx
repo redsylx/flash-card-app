@@ -1,7 +1,7 @@
 import { ChangeEvent, useEffect } from "react";
 import { useLoading } from "../../../../components/Loading";
 import { Close } from "@mui/icons-material";
-import { useAccount, useCardCategoryDropdownStateStore, useImageUploaderStore, useSellCardCategoryTableStateStore } from "../../../../store";
+import { useAccount, useAlert, useCardCategoryDropdownStateStore, useImageUploaderStore, useSellCardCategoryTableStateStore } from "../../../../store";
 import { usePopupSellCardCategory } from "./store";
 import { IconContainer } from "../../../../components/IconContainer";
 import { ImageUploader } from "../../../../components/ImageUploader";
@@ -20,6 +20,7 @@ export default () => {
   const dropdown = useCardCategoryDropdownStateStore();
   const table = useSellCardCategoryTableStateStore();
   const { account } = useAccount();
+  const alert = useAlert();
 
   useEffect(() => {
     dropdown.setItem(defaultCardCategory);
@@ -42,20 +43,18 @@ export default () => {
   }
 
   const createSellCardCategory = async () => {
-    loading.setLoading(true)
-    await asyncProcess(async () => {
-      const token = await getIdToken();
-      if(image.image) {
-        const uploadRes : IGetUploadProp = await (await serviceUploadGetUploadImageUrl(token, image.image.name)).json();
-        await serviceUpload(image.image, uploadRes);
-        popup.formItem.img = uploadRes.fileName;
-      }
-      await serviceSellCardCategoryCreate(token, account.id, dropdown.item.id, popup.formItem);
-      table.setRefresh(!table.refresh);
-    })
-    loading.setLoading(false)
+    const token = await getIdToken();
+    if(image.image) {
+      const uploadRes : IGetUploadProp = await (await serviceUploadGetUploadImageUrl(token, image.image.name)).json();
+      await serviceUpload(image.image, uploadRes);
+      popup.formItem.img = uploadRes.fileName;
+    }
+    await serviceSellCardCategoryCreate(token, account.id, dropdown.item.id, popup.formItem);
+    table.setRefresh(!table.refresh);
     popup.setIsOpen(false)
   }
+
+  const onCreateSellCardCategory = () => asyncProcess(createSellCardCategory, alert, loading);
 
   return (
     <div className="flex flex-col justify-between">
@@ -87,12 +86,24 @@ export default () => {
         value={popup.formItem.description}
         onChange={handleTextAreaChange}
         name="description"
+        minLength={0}
+        maxLength={10000}
+      />
+      <p className="custom-text-1 text-sub mb-2">Point Price</p>
+      <input
+        type="number"
+        placeholder={popup.item.name ? popup.item.name : "Price Point (min 0)"}
+        value={popup.formItem.point}
+        onChange={handleInputChange}
+        name="point"
+        className="w-full p-2 mb-4 custom-text-1 text-sub bg-bg border-2 rounded-lg border-sub-alt placeholder-sub-alt font-bold focus:outline-none focus:border-sub focus:"
       />
       <div className="mb-4">
+        <p className="custom-text-1 text-sub mb-2">Cover Image</p>
         <ImageUploader image={image} />
       </div>
       <div className="grid grid-cols-1">
-        <button onClick={createSellCardCategory} className="custom-button py-2 rounded-lg">Create</button>
+        <button onClick={onCreateSellCardCategory} className="custom-button py-2 rounded-lg">Create</button>
       </div>
     </div>
   )

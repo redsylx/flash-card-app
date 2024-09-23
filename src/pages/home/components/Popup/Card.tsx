@@ -9,7 +9,7 @@ import { serviceCardCreate, serviceCardDelete, serviceCardUpdate } from "../../.
 import { IconContainer } from "../../../../components/IconContainer";
 import { Close } from "@mui/icons-material";
 import { useHomeDropdown } from "../Dropdown/store";
-import { useImageUploaderHome } from "../../../../store";
+import { useAlert, useImageUploaderHome } from "../../../../store";
 import { ImageUploader } from "../../../../components/ImageUploader";
 
 export default () => {
@@ -18,6 +18,7 @@ export default () => {
   const loading = useLoading();
   const dropdown = useHomeDropdown();
   const image = useImageUploaderHome();
+  const alert = useAlert();
 
   useEffect(() => image.setPreviewUrl(popup.selectedCard.clueImgUrl), [])
 
@@ -36,60 +37,47 @@ export default () => {
   }
 
   const createCard = async () => {
-    loading.setLoading(true)
-    await asyncProcess(async () => {
-      const token = await getIdToken();
-      popup.modifiedCard.cardCategory = dropdown.selectedCardCategory;
-      if(image.image) {
-        const uploadRes : IGetUploadProp = await (await serviceUploadGetUploadImageUrl(token, image.image.name)).json();
-        try {
-          await serviceUpload(image.image, uploadRes);
-          popup.modifiedCard.clueImg = uploadRes.fileName;
-        } catch (e) {
-          console.error(e);
-        }
-      }
-      await serviceCardCreate(token, popup.modifiedCard);
-      card.setRefresh(!card.refresh)
-      dropdown.setRefresh(!dropdown.refresh)
-    })
+    const token = await getIdToken();
+    popup.modifiedCard.cardCategory = dropdown.selectedCardCategory;
+    if(image.image) {
+      const uploadRes : IGetUploadProp = await (await serviceUploadGetUploadImageUrl(token, image.image.name)).json();
+      await serviceUpload(image.image, uploadRes);
+      popup.modifiedCard.clueImg = uploadRes.fileName;
+    }
+    await serviceCardCreate(token, popup.modifiedCard);
+    card.setRefresh(!card.refresh)
+    dropdown.setRefresh(!dropdown.refresh)
     popup.setIsCardOpen(false);
-    loading.setLoading(false)
   }
 
   const updateCard = async () => {
-    loading.setLoading(true)
-    await asyncProcess(async () => {
-      const token = await getIdToken();
-      if(image.previewUrl != popup.modifiedCard.clueImgUrl) popup.modifiedCard.clueImg = "";
-      if(image.previewUrl != popup.modifiedCard.clueImgUrl && image.image) {
-        const uploadRes : IGetUploadProp = await (await serviceUploadGetUploadImageUrl(token, image.image.name)).json();
-        try {
-          await serviceUpload(image.image, uploadRes);
-          popup.modifiedCard.clueImg = uploadRes.fileName;
-        } catch (e) {
-          console.error(e);
-        }
+    const token = await getIdToken();
+    if(image.previewUrl != popup.modifiedCard.clueImgUrl) popup.modifiedCard.clueImg = "";
+    if(image.previewUrl != popup.modifiedCard.clueImgUrl && image.image) {
+      const uploadRes : IGetUploadProp = await (await serviceUploadGetUploadImageUrl(token, image.image.name)).json();
+      try {
+        await serviceUpload(image.image, uploadRes);
+        popup.modifiedCard.clueImg = uploadRes.fileName;
+      } catch (e) {
+        console.error(e);
       }
-      await serviceCardUpdate(token, popup.modifiedCard);
-      card.setRefresh(!card.refresh);
-      dropdown.setRefresh(!dropdown.refresh);
-    })
+    }
+    await serviceCardUpdate(token, popup.modifiedCard);
+    card.setRefresh(!card.refresh);
+    dropdown.setRefresh(!dropdown.refresh);
     popup.setIsCardOpen(false);
-    loading.setLoading(false)
   }
 
   const deleteCard = async () => {
-    loading.setLoading(true)
-    await asyncProcess(async () => {
-      const token = await getIdToken();
-      await serviceCardDelete(token, popup.modifiedCard.id);
-      card.setRefresh(!card.refresh);
-      dropdown.setRefresh(!dropdown.refresh);
-    })
+    const token = await getIdToken();
+    await serviceCardDelete(token, popup.modifiedCard.id);
+    card.setRefresh(!card.refresh);
+    dropdown.setRefresh(!dropdown.refresh);
     popup.setIsCardOpen(false);
-    loading.setLoading(false)
   }
+
+  const onUpdateCard = () => asyncProcess(updateCard, alert, loading);
+  const onDeleteCard = () => asyncProcess(deleteCard, alert, loading);
 
   const checkType = (checkType: PopupCardState) : boolean => {
     return popup.stateCard === checkType;
@@ -128,8 +116,8 @@ export default () => {
           {
             checkType("update") 
             ? (<div className="grid grid-cols-2 gap-4">
-              <button onClick={deleteCard} className="custom-button-alert py-2 rounded-lg">Delete</button>
-              <button onClick={updateCard} className="custom-button py-2 rounded-lg">Update</button>
+              <button onClick={onDeleteCard} className="custom-button-alert py-2 rounded-lg">Delete</button>
+              <button onClick={onUpdateCard} className="custom-button py-2 rounded-lg">Update</button>
               </div>)
             : (<button className="custom-button mt-2 py-2 rounded-lg" onClick={createCard}>create</button>)
           }

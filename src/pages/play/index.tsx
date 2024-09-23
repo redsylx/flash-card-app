@@ -41,7 +41,7 @@ export default () => {
   const [ showGame, setShowGame ] = useState(false);
   const [ showDescription, setShowDescription] = useState(false);
   const [ countdown, setCountdown] = useState(15);
-  const { account } = useAccount();
+  const { account, setRefresh,refresh } = useAccount();
   const play = usePlay();
   const loading = useLoading();
 
@@ -97,6 +97,7 @@ export default () => {
     try {
       const token = await getIdToken();
       const game : IGame = await (await serviceGameFinish(token, play.game.id)).json();
+      setRefresh(!refresh);
       play.setGame(game);
     } catch (error) {
       console.error('Error fetching data:', error);
