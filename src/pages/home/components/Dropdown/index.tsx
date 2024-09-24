@@ -28,8 +28,11 @@ const Dropdown : React.FC<IDropdownProps> = ({ dropdown }) => {
     return (
         <div className="flex items-center">
             <div className="me-4">
-                <div className="p-4 bg-sub-alt rounded-xl border-2 border-sub custom-button hover:cursor-pointer w-[300px]" onClick={() => dropdown.setIsOpen(!dropdown.isOpen)}>
-                    <button className="custom-text-1 text-left">{dropdown.selectedCardCategory.name}</button>
+                <div className="p-4 bg-sub-alt rounded-xl border-2 border-sub custom-button hover:cursor-pointer w-[250px] sm:w-[300px]" onClick={() => dropdown.setIsOpen(!dropdown.isOpen)}>
+                    <div className=" flex justify-between">
+                        <p className="custom-text-1 text-left">{dropdown.selectedCardCategory.name}</p>
+                        <p className="custom-text-1 text-right">{dropdown.selectedCardCategory.nCard} item</p>
+                    </div>
                 </div>
                 {dropdown.isOpen && (
                     <div className="absolute z-20 mt-4 bg-sub-alt border-2 border-sub rounded-xl min-w-[300px]">
@@ -43,7 +46,6 @@ const Dropdown : React.FC<IDropdownProps> = ({ dropdown }) => {
                     </div>
                 )}
             </div>
-            <p className="">{dropdown.selectedCardCategory.nCard > 0 ? dropdown.selectedCardCategory.nCard + ' items' : ''}</p>
         </div>
     );
 };

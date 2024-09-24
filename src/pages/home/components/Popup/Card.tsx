@@ -43,6 +43,7 @@ export default () => {
       const uploadRes : IGetUploadProp = await (await serviceUploadGetUploadImageUrl(token, image.image.name)).json();
       await serviceUpload(image.image, uploadRes);
       popup.modifiedCard.clueImg = uploadRes.fileName;
+      image.setImage(null);
     }
     await serviceCardCreate(token, popup.modifiedCard);
     card.setRefresh(!card.refresh)

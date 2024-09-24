@@ -16,10 +16,13 @@ import Card from "./components/Card";
 import { useHomeDropdown } from "./components/Dropdown/store";
 import { useLoading } from "../../components/Loading";
 import { asyncProcess } from "../../utils/loading";
+import DragAndDrop from "../../components/DragAndDrop";
+import { IconContainer } from "../../components/IconContainer";
+import { Add, AddCircle } from "@mui/icons-material";
 
 export default () => {
-  const [ firstRender, setFirstRender ] = useState(true);
-  const [ firstRender2, setFirstRender2 ] = useState(true);
+  const [firstRender, setFirstRender] = useState(true);
+  const [firstRender2, setFirstRender2] = useState(true);
   const { account } = useAccount();
   const dropdown = useHomeDropdown();
   const card = useCard();
@@ -30,7 +33,7 @@ export default () => {
   useEffect(() => {
     const fetchCardCategories = async () => {
       const token = await getIdToken();
-      const categories : ICardCategory[] = await (await serviceCardCategoryGetList(token, account.id)).json();
+      const categories: ICardCategory[] = await (await serviceCardCategoryGetList(token, account.id)).json();
       const defaultCategory = (categories.find(p => p.name === "default")) || (categories.length > 0 ? categories[0] : defaultCardCategory);
       dropdown.setCardCategories(categories);
       dropdown.setPrevSelectedCardCategory(dropdown.selectedCardCategory);
@@ -42,7 +45,7 @@ export default () => {
       setFirstRender(false);
     };
 
-    if(firstRender && dropdown.cardCategories.length != 0) setFirstRender(false)
+    if (firstRender && dropdown.cardCategories.length != 0) setFirstRender(false)
     else asyncProcess(fetchCardCategories, alert, loading);
   }, [dropdown.refresh]);
 
@@ -55,12 +58,12 @@ export default () => {
       card.setCards(cards);
     };
 
-    if(firstRender2 && dropdown.cardCategories.length != 0) setFirstRender2(false)
+    if (firstRender2 && dropdown.cardCategories.length != 0) setFirstRender2(false)
     else asyncProcess(() => fetchCards(dropdown.selectedCardCategory.id), alert, loading);
   }, [dropdown.selectedCardCategory, card.refresh, dropdown.refresh]);
 
   useEffect(() => {
-    if(card.cards.length != 0) return;
+    if (card.cards.length != 0) return;
     card.setCards([emptyCard]);
   }, [card.cards])
 
@@ -69,8 +72,12 @@ export default () => {
       <Header />
       <div className="custom-page">
         <div className="my-4 flex justify-between">
-          <Dropdown dropdown={dropdown}/>
-          <button onClick={() => { popup.setSelectedCard(defaultCard); popup.setStateCard("add"); popup.setIsCardOpen(true) }} className="text-main font-bold custom-text-1">Add</button>
+          <Dropdown dropdown={dropdown} />
+          <div onClick={() => { popup.setSelectedCard(defaultCard); popup.setStateCard("add"); popup.setIsCardOpen(true) }} className="flex items-center">
+            <IconContainer>
+              <Add/>
+            </IconContainer>
+          </div>
         </div>
         <hr className="border-t-2 border-sub" />
         <div className="pt-4">
@@ -81,8 +88,9 @@ export default () => {
           </div>
         </div>
       </div>
-      <CustomPopup isOpen={popup.isCardCategoryOpen} children={<CardCategory/>}/>
-      <CustomPopup isOpen={popup.isCardOpen} children={<CardPopup/>}/>
+      {/* <DragAndDrop/> */}
+      <CustomPopup isOpen={popup.isCardCategoryOpen} children={<CardCategory />} />
+      <CustomPopup isOpen={popup.isCardOpen} children={<CardPopup />} />
     </div>
   );
 };
